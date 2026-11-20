@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- Aucune ressource distante : seules les couvertures du dossier covers/ et le fichier data-casier.js sont lus (même site) -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:;">
+<title>Casier Macintosh — Casier Pédagogique Numérique</title>
+<!--
+  Projet : Casier V3 « Macintosh »  ·  Version : 1.0.0  ·  Date : 20/11/2026
+  Auteur : Tom Rougeaud  ·  Licence : CC BY-NC 4.0
+  Réalisé avec l’aide de l’IA : Claude Sonnet 5.5 (Anthropic)
+  Habillage rétro (fenêtres rayées, barre de menus, « hello » cursif) du Casier Pédagogique Numérique.
+  Dessins et textes originaux : la pomme est un simple fruit entier (aucun logo de marque), le « hello » utilise une police cursive du système.
+-->
+<style>
+/* ===== SECTION : Variables et base ===== */
+:root{--noir:#000;--blanc:#fff;--ardoise:#5a6a8a;--ardoise2:#7d8bab;
+  --police:Geneva,Charcoal,"Lucida Grande",Verdana,sans-serif;
+  --cursive:"Snell Roundhand","Apple Chancery","Brush Script MT","Segoe Script","Lucida Handwriting",cursive;}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;font:12px var(--police);color:#000;user-select:none;-webkit-user-select:none;
+  background:repeating-conic-gradient(var(--ardoise) 0 25%,var(--ardoise2) 0 50%) 0 0/2px 2px}
+button{font:inherit;color:inherit;cursor:default}
+[hidden]{display:none!important}
+:focus-visible{outline:2px dotted #000;outline-offset:2px}
+
+/* ===== SECTION : Barre de menus ===== */
+#menus{position:fixed;left:0;right:0;top:0;height:24px;background:#fff;border-bottom:2px solid #000;display:flex;align-items:center;z-index:100000;padding:0 4px}
+.mb{position:relative}
+.mb>button{background:none;border:0;padding:3px 10px;min-height:22px;font-weight:bold}
+.mb>button.ouvert{background:#000;color:#fff}
+.mb>button.pomme{padding:2px 10px}
+.mb>button.pomme.ouvert svg path{fill:#fff}
+.liste{position:absolute;left:0;top:100%;min-width:200px;background:#fff;border:2px solid #000;box-shadow:2px 2px 0 #000;padding:1px 0}
+.liste button{display:block;width:100%;text-align:left;background:none;border:0;padding:4px 16px}
+.liste button:hover{background:#000;color:#fff}
+.liste hr{margin:2px 0;border:0;border-top:1px solid #000}
+#horloge{margin-left:auto;padding:0 10px;font-weight:bold}
+
+/* ===== SECTION : Bureau et icônes ===== */
+#bureau{position:absolute;left:0;right:0;top:24px;bottom:0;overflow:hidden}
+.ico{width:96px;padding:4px;background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;line-height:1.2;min-height:46px}
+.ico .lib{padding:1px 4px;background:#fff;border:1px solid transparent;word-break:break-word}
+.ico.sel svg{filter:invert(1)}
+.ico.sel .lib{background:#000;color:#fff}
+.ico svg{display:block}
+.fixe{position:absolute}
+#disque{right:14px;top:12px}
+#corbeille{right:14px;bottom:14px}
+
+/* ===== SECTION : Fenêtres ===== */
+.fen{position:absolute;background:#fff;border:2px solid #000;box-shadow:2px 2px 0 #000;display:flex;flex-direction:column;min-width:200px}
+.fen.max{left:0!important;top:0!important;width:100%!important;height:100%!important}
+.tb{height:22px;border-bottom:2px solid #000;position:relative;display:flex;align-items:center;justify-content:center;flex:none;touch-action:none}
+.tb .stries{position:absolute;left:24px;right:24px;top:4px;bottom:4px;display:none;
+  background:repeating-linear-gradient(#000 0 1px,#fff 1px 3px)}
+.fen.actif .tb .stries{display:block}
+.tb .nom{position:relative;background:#fff;padding:0 10px;font-weight:bold;max-width:calc(100% - 70px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tb .case{position:absolute;top:3px;width:15px;height:15px;background:#fff;border:2px solid #000;padding:0;display:none}
+.fen.actif .tb .case{display:block}
+.tb .case.ferme{left:6px}
+.tb .case.zoom{right:6px;box-shadow:inset 0 0 0 2px #fff,inset 0 0 0 3px #000}
+.corps{flex:1;display:flex;flex-direction:column;min-height:0;position:relative}
+.infos{display:flex;justify-content:space-between;padding:3px 8px;border-bottom:2px solid #000;font-size:11px;flex:none}
+.zone{flex:1;overflow:auto;padding:8px;background:#fff}
+.vue-icones{display:flex;flex-wrap:wrap;align-content:flex-start;gap:6px}
+.vue-liste{display:flex;flex-direction:column}
+.vue-liste .ico{width:100%;flex-direction:row;justify-content:flex-start;text-align:left;min-height:24px;padding:1px 4px}
+.vue-liste .ico .lib{flex:1;background:none}
+.vue-liste .ico.sel .lib{background:none}
+.vue-liste .ico.sel{background:#000;color:#fff}
+.vue-liste .ico .col{margin-left:auto;padding-left:10px;white-space:nowrap}
+.poignee{position:absolute;right:0;bottom:0;width:16px;height:16px;background:#fff;border-top:2px solid #000;border-left:2px solid #000;cursor:nwse-resize;touch-action:none}
+.poignee::after{content:"";position:absolute;left:3px;top:3px;width:6px;height:6px;border:2px solid #000}
+.fen.max .poignee{display:none}
+
+/* ===== SECTION : Boîtes de dialogue ===== */
+.dlg{box-shadow:0 0 0 2px #fff,0 0 0 4px #000,4px 4px 0 4px #000;border:2px solid #000}
+.dlg .tb{display:none}
+.dlg .corps{padding:14px}
+.dlg .haut{display:flex;gap:14px;align-items:flex-start}
+.dlg p{margin:0 0 8px;line-height:1.4;user-select:text;-webkit-user-select:text}
+.bas{display:flex;gap:10px;justify-content:flex-end;padding-top:12px;flex-wrap:wrap}
+.bt{border:2px solid #000;border-radius:8px;background:#fff;padding:3px 14px;min-height:30px;min-width:80px}
+.bt:active{background:#000;color:#fff}
+.bt.defaut{box-shadow:0 0 0 2px #fff,0 0 0 4px #000}
+.fiche dl{margin:8px 0 0;display:grid;grid-template-columns:90px 1fr;gap:4px 8px}
+.fiche dd{margin:0;user-select:text;-webkit-user-select:text;word-break:break-word}
+.fiche .entete{display:flex;gap:12px;align-items:center;font-weight:bold;font-size:13px;margin-bottom:8px}
+.fiche img{display:block;width:100%;border:2px solid #000;margin:8px 0;filter:grayscale(1) contrast(1.25)}
+.fiche .scroll{max-height:66vh;overflow:auto;padding-right:4px}
+.recherche{display:flex;gap:8px;padding:8px;align-items:center;border-bottom:2px solid #000;flex:none}
+.recherche input{flex:1;min-height:28px;padding:2px 6px;font:inherit;border:2px solid #000;user-select:text;-webkit-user-select:text;outline:0;background:#fff}
+.duel{padding:16px;text-align:center}
+.duel p{margin:0 0 10px;line-height:1.4}
+.score{height:18px;border:2px solid #000;display:flex;margin:6px 0}
+.score i{display:block;height:100%}
+
+/* ===== SECTION : Écrans spéciaux ===== */
+#amorce,#arret{position:fixed;inset:0;z-index:200000;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:20px}
+#amorce .bj{font:italic 400 clamp(64px,16vw,120px)/1 var(--cursive);margin:6px 0 16px}
+#arret{background:#000;color:#fff;font-size:15px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div id="menus" role="menubar"></div>
+<div id="bureau" aria-label="Bureau"></div>
+
+<div id="amorce" role="status" tabindex="0">
+  <div id="logo-amorce"></div>
+  <div class="bj">hello</div>
+  <div>Bienvenue dans le Casier</div>
+  <small>(clique ou appuie sur Entrée pour continuer)</small>
+</div>
+<div id="arret" hidden tabindex="0" role="status">
+  <div>Vous pouvez maintenant éteindre votre Macintosh en toute sécurité.</div>
+  <small>(clique ou appuie sur Entrée pour rallumer)</small>
+</div>
+
+<script src="../data-casier.js"></script>
+<script>
+(function () {
+"use strict";
+
+/* ===== SECTION : Constantes ===== */
+var CLE_DUEL = "casiermac_v1_duel";                 /* clé de stockage : appli + version du schéma */
+var NOM_MODELE = "Claude Sonnet 5.5 (Anthropic)";   /* modèle d’IA affiché dans « À propos » */
+var DONNEES = window.CASIER || { base: "", items: [] };
+var RESSOURCES = DONNEES.items || [];
+var FAMILLES = {                                    /* familles = dossiers du casier */
+  J: { nom: "Jeux", icone: "jeu" },
+  O: { nom: "Outils", icone: "outil" },
+  C: { nom: "Cours et manuels", icone: "livre" },
+  E: { nom: "Évaluations", icone: "liste" }
+};
+var ORDRE_FAMILLES = ["J", "O", "C", "E"];
+
+/* ===== SECTION : Stockage protégé (repli en mémoire) ===== */
+var memoire = {};
+/* Lit une valeur : localStorage d’abord, sinon la copie en mémoire. */
+function lire(cle) {
+  try { var v = localStorage.getItem(cle); return v === null ? (memoire[cle] || null) : v; }
+  catch (e) { return memoire[cle] || null; }
+}
+/* Écrit une valeur ; false si le navigateur refuse. */
+function ecrire(cle, valeur) {
+  memoire[cle] = valeur;
+  try { localStorage.setItem(cle, valeur); return true; } catch (e) { return false; }
+}
+/* Supprime une valeur. */
+function effacer(cle) { delete memoire[cle]; try { localStorage.removeItem(cle); } catch (e) {} }
+
+/* ===== SECTION : Utilitaires ===== */
+/* Crée un élément (textContent : jamais d’innerHTML avec du texte venant des données). */
+function el(balise, classe, texte) {
+  var n = document.createElement(balise);
+  if (classe) n.className = classe;
+  if (texte !== undefined) n.textContent = texte;
+  return n;
+}
+/* Crée un bouton. */
+function bouton(classe, texte, action) {
+  var b = el("button", classe, texte); b.type = "button";
+  if (action) b.addEventListener("click", action);
+  return b;
+}
+/* Espaces multiples réduits. */
+function propre(s) { return String(s || "").replace(/\s+/g, " ").trim(); }
+/* Sans accents ni majuscules, pour la recherche. */
+function simple(s) { return propre(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase(); }
+/* Adresse complète d’une ressource. */
+function adresse(it) { return /^https?:/.test(it.u) ? it.u : (DONNEES.base || "") + it.u; }
+/* AAAA-MM-JJ → JJ/MM/AAAA. */
+function dateFr(d) { var p = String(d || "").split("-"); return p.length === 3 ? p[2] + "/" + p[1] + "/" + p[0] : ""; }
+/* Ouvre une adresse dans un nouvel onglet, sans lien de retour. */
+function ouvrirLien(url) {
+  var a = document.createElement("a");
+  a.href = url; a.target = "_blank"; a.rel = "noopener noreferrer";
+  document.body.appendChild(a); a.click(); a.remove();
+}
+/* Va vers une page voisine. */
+function aller(url) { window.location.href = url; }
+
+/* ===== SECTION : Icônes (dessins originaux en noir et blanc) ===== */
+var T = 'stroke="#000" stroke-width="1.6" fill="#fff"'; /* trait commun : contour noir, fond blanc */
+var ICONES = {
+  pomme: '<path d="M16 10c-2.5-2.2-8-1.4-8.6 4.6C6.8 21 10 29 13.4 29c1.2 0 1.8-.7 2.6-.7s1.4.7 2.6.7c3.4 0 6.6-8 6-14.4C24 8.6 18.5 7.8 16 10z" fill="#000"/><path d="M16 9c0-3 2-5.4 5-5.6 0 3.2-2 5.4-5 5.6z" fill="#000"/>',
+  ordi: '<rect x="6" y="3" width="20" height="19" rx="3" ' + T + '/><rect x="9" y="6" width="14" height="11" ' + T + '/><path d="M12 12q4 4 8 0" stroke="#000" stroke-width="1.6" fill="none"/><rect x="9" y="24" width="14" height="4" ' + T + '/><circle cx="13" cy="10.5" r="1" fill="#000"/><circle cx="19" cy="10.5" r="1" fill="#000"/>',
+  casier: '<rect x="5" y="3" width="22" height="26" ' + T + '/><rect x="8" y="6" width="16" height="9" ' + T + '/><rect x="8" y="17" width="16" height="9" ' + T + '/><rect x="13" y="9" width="6" height="2" fill="#000"/><rect x="13" y="20" width="6" height="2" fill="#000"/>',
+  dossier: '<path d="M3 8h9l3 3h14v16H3z" ' + T + '/><path d="M3 13h26" stroke="#000" stroke-width="1.6"/>',
+  corbeille: '<path d="M8 9h16l-2 19H10z" ' + T + '/><rect x="6" y="6" width="20" height="3" ' + T + '/><path d="M13 12v13M16 12v13M19 12v13" stroke="#000"/>',
+  jeu: '<rect x="3" y="9" width="26" height="15" rx="6" ' + T + '/><path d="M9 13v7M5.5 16.5h7" stroke="#000" stroke-width="2"/><circle cx="22" cy="14" r="2" fill="#000"/><circle cx="25" cy="19" r="2" fill="#000"/>',
+  outil: '<rect x="3" y="5" width="26" height="22" ' + T + '/><path d="M3 10h26" stroke="#000" stroke-width="1.6"/><rect x="6" y="13" width="9" height="11" ' + T + '/><path d="M18 14h8M18 18h8M18 22h6" stroke="#000"/>',
+  livre: '<path d="M4 6h11v21H4zM17 6h11v21H17z" ' + T + '/><path d="M7 11h5M7 15h5M20 11h5M20 15h5" stroke="#000"/>',
+  liste: '<rect x="6" y="3" width="20" height="26" ' + T + '/><path d="M9 9l2 2 3-4M9 17l2 2 3-4M9 25l2 2 3-4M17 10h6M17 18h6M17 26h6" stroke="#000" stroke-width="1.6" fill="none"/>',
+  loupe: '<circle cx="13" cy="13" r="8" ' + T + '/><path d="M19 19l9 9" stroke="#000" stroke-width="4"/>',
+  duel: '<rect x="2" y="6" width="13" height="12" ' + T + '/><rect x="17" y="6" width="13" height="12" ' + T + '/><path d="M5 12h7M20 12h7" stroke="#000" stroke-width="2"/><path d="M12 25l4-4 4 4" stroke="#000" stroke-width="2" fill="none"/>',
+  bombe: '<circle cx="15" cy="19" r="9" fill="#000"/><path d="M20 12l4-5" stroke="#000" stroke-width="2.4"/><path d="M24 7l2-3M24 7l3 1M24 7l-1-3" stroke="#000" stroke-width="1.4"/><circle cx="12" cy="16" r="2" fill="#fff"/>',
+  info: '<circle cx="16" cy="16" r="13" ' + T + '/><text x="16" y="23" text-anchor="middle" font-size="20" font-weight="bold" fill="#000" font-family="Georgia,serif">i</text>',
+  question: '<circle cx="16" cy="16" r="13" ' + T + '/><text x="16" y="23" text-anchor="middle" font-size="20" font-weight="bold" fill="#000" font-family="Arial">?</text>',
+  alerte: '<path d="M16 3l14 25H2z" ' + T + '/><text x="16" y="25" text-anchor="middle" font-size="18" font-weight="bold" fill="#000" font-family="Arial">!</text>'
+};
+/* Code SVG d’une icône (contenu statique, jamais de texte saisi). */
+function svg(nom, t) {
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="' + t + '" height="' + t + '" aria-hidden="true">' + (ICONES[nom] || "") + "</svg>";
+}
+/* Petit élément portant une icône. */
+function iconeEl(nom, t) { var s = el("span"); s.style.display = "inline-flex"; s.innerHTML = svg(nom, t); return s; }
+/* Icône d’une ressource selon sa famille. */
+function iconeDe(it) { return (FAMILLES[it.k] || FAMILLES.O).icone; }
+
+/* ===== SECTION : Gestionnaire de fenêtres ===== */
+var fenetres = [], zMax = 10, actif = null;
+var bureau = document.getElementById("bureau");
+
+/* Active une fenêtre (premier plan, barre rayée). */
+function activer(f) {
+  zMax++; f.el.style.zIndex = zMax; actif = f;
+  fenetres.forEach(function (g) { g.el.classList.toggle("actif", g === f); });
+}
+/* Ferme une fenêtre et active la suivante. */
+function fermer(f) {
+  var i = fenetres.indexOf(f); if (i < 0) return;
+  fenetres.splice(i, 1); f.el.remove();
+  var m = null; fenetres.forEach(function (g) { if (!m || +g.el.style.zIndex > +m.el.style.zIndex) m = g; });
+  if (m) activer(m); else actif = null;
+}
+/* Agrandit ou rétablit. */
+function basculerMax(f) { f.max = !f.max; f.el.classList.toggle("max", f.max); }
+/* Déplacement par la barre de titre. */
+function brancherGlisser(f) {
+  f.barre.addEventListener("pointerdown", function (e) {
+    if (e.target.closest("button") || f.max) return;
+    var dx = e.clientX - f.el.offsetLeft, dy = e.clientY - f.el.offsetTop;
+    try { f.barre.setPointerCapture(e.pointerId); } catch (x) {}
+    function bouge(ev) {
+      f.el.style.left = Math.max(-f.el.offsetWidth + 60, Math.min(ev.clientX - dx, window.innerWidth - 60)) + "px";
+      f.el.style.top = Math.max(0, Math.min(ev.clientY - dy, window.innerHeight - 70)) + "px";
+    }
+    function fin() { f.barre.removeEventListener("pointermove", bouge); f.barre.removeEventListener("pointerup", fin); f.barre.removeEventListener("pointercancel", fin); }
+    f.barre.addEventListener("pointermove", bouge); f.barre.addEventListener("pointerup", fin); f.barre.addEventListener("pointercancel", fin);
+  });
+}
+/* Redimensionnement par le coin. */
+function brancherRedim(f, p) {
+  p.addEventListener("pointerdown", function (e) {
+    e.stopPropagation();
+    var x0 = e.clientX, y0 = e.clientY, w0 = f.el.offsetWidth, h0 = f.el.offsetHeight;
+    try { p.setPointerCapture(e.pointerId); } catch (x) {}
+    function bouge(ev) { f.el.style.width = Math.max(240, w0 + ev.clientX - x0) + "px"; f.el.style.height = Math.max(160, h0 + ev.clientY - y0) + "px"; }
+    function fin() { p.removeEventListener("pointermove", bouge); p.removeEventListener("pointerup", fin); p.removeEventListener("pointercancel", fin); }
+    p.addEventListener("pointermove", bouge); p.addEventListener("pointerup", fin); p.addEventListener("pointercancel", fin);
+  });
+}
+/* Ouvre une fenêtre. Options : id, titre, l, h, redim, dlg (boîte de dialogue), centre, contenu(corps, f). */
+function ouvrirFenetre(o) {
+  if (o.id) { for (var i = 0; i < fenetres.length; i++) if (fenetres[i].id === o.id) { activer(fenetres[i]); return fenetres[i]; } }
+  var f = { id: o.id || null, max: false, opt: o };
+  var zoneH = window.innerHeight - 24;
+  var L = Math.min(o.l || 420, window.innerWidth - 12), H = Math.min(o.h || 320, zoneH - 12), n = fenetres.length % 7;
+  var x = o.centre ? (window.innerWidth - L) / 2 : Math.max(0, Math.min(40 + n * 26, window.innerWidth - L - 6));
+  var y = o.centre ? (zoneH - H) / 2 : Math.max(0, Math.min(20 + n * 26, zoneH - H - 6));
+  f.el = el("div", "fen" + (o.dlg ? " dlg" : ""));
+  f.el.setAttribute("role", o.dlg ? "dialog" : "group"); f.el.setAttribute("aria-label", o.titre);
+  f.el.style.cssText = "left:" + x + "px;top:" + y + "px;width:" + L + "px;" + (o.h ? "height:" + H + "px;" : "");
+  f.barre = el("div", "tb"); f.barre.appendChild(el("div", "stries"));
+  var cf = bouton("case ferme", "", function () { fermer(f); }); cf.setAttribute("aria-label", "Fermer");
+  f.barre.appendChild(cf);
+  f.barre.appendChild(el("span", "nom", o.titre));
+  if (o.redim !== false && !o.dlg) {
+    var cz = bouton("case zoom", "", function () { basculerMax(f); }); cz.setAttribute("aria-label", "Agrandir"); f.barre.appendChild(cz);
+    f.barre.addEventListener("dblclick", function (e) { if (!e.target.closest("button")) basculerMax(f); });
+  }
+  f.el.appendChild(f.barre);
+  f.corps = el("div", "corps"); f.el.appendChild(f.corps);
+  if (o.redim !== false && !o.dlg) { var p = el("div", "poignee"); f.el.appendChild(p); brancherRedim(f, p); }
+  f.el.addEventListener("pointerdown", function () { if (actif !== f) activer(f); }, true);
+  bureau.appendChild(f.el); fenetres.push(f);
+  brancherGlisser(f); activer(f);
+  if (window.innerWidth < 600 && o.redim !== false && !o.dlg) basculerMax(f); /* petit écran : plein cadre */
+  if (o.contenu) o.contenu(f.corps, f);
+  return f;
+}
+/* Boîte de dialogue. boutons : [{t, f}] ; le premier est le bouton par défaut. */
+function boite(texte, icone, boutons) {
+  boutons = boutons || [{ t: "OK" }];
+  return ouvrirFenetre({
+    titre: "Message", dlg: true, centre: true, l: 360, redim: false,
+    contenu: function (corps, f) {
+      var haut = el("div", "haut"); haut.appendChild(iconeEl(icone || "info", 36)); haut.appendChild(el("p", "", texte)); corps.appendChild(haut);
+      var bas = el("div", "bas");
+      boutons.slice().reverse().forEach(function (b, i, tab) {
+        var estDefaut = i === tab.length - 1;
+        var bt = bouton("bt" + (estDefaut ? " defaut" : ""), b.t, function () { fermer(f); if (b.f) b.f(); });
+        bas.appendChild(bt); if (estDefaut) setTimeout(function () { bt.focus(); }, 0);
+      });
+      corps.appendChild(bas);
+    }
+  });
+}
+
+/* ===== SECTION : Icônes cliquables ===== */
+/* Un clic sélectionne, un double-clic (ou Entrée) ouvre. */
+function creerIcone(parent, nom, libelle, action, colonne) {
+  var b = bouton("ico", "");
+  b.appendChild(iconeEl(nom, 32)); b.appendChild(el("span", "lib", libelle));
+  if (colonne) b.appendChild(el("span", "col", colonne));
+  b.addEventListener("click", function () {
+    var s = parent.querySelectorAll(".ico.sel"); for (var i = 0; i < s.length; i++) s[i].classList.remove("sel");
+    b.classList.add("sel");
+  });
+  b.addEventListener("dblclick", action);
+  b.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); action(); } });
+  parent.appendChild(b);
+  return b;
+}
+
+/* ===== SECTION : Barre de menus ===== */
+var barreMenus = document.getElementById("menus"), ouverts = [];
+/* Ferme tous les menus. */
+function fermerMenus() { ouverts.forEach(function (m) { m.liste.hidden = true; m.bouton.classList.remove("ouvert"); }); }
+/* Ajoute un menu : titre (texte ou icône), éléments [{t, f} | "-"]. */
+function ajouterMenu(titre, items, pomme) {
+  var bloc = el("div", "mb"), bt = el("button", pomme ? "pomme" : "");
+  bt.type = "button";
+  if (pomme) { bt.innerHTML = svg("pomme", 18); bt.setAttribute("aria-label", "Menu pomme"); } else bt.textContent = titre;
+  var liste = el("div", "liste"); liste.hidden = true; liste.setAttribute("role", "menu");
+  items.forEach(function (it) {
+    if (it === "-") { liste.appendChild(el("hr")); return; }
+    liste.appendChild(bouton("", it.t, function () { fermerMenus(); it.f(); }));
+  });
+  bt.addEventListener("click", function () { var o = !liste.hidden; fermerMenus(); if (!o) { liste.hidden = false; bt.classList.add("ouvert"); } });
+  bt.addEventListener("mouseenter", function () { if (ouverts.some(function (m) { return !m.liste.hidden; })) { fermerMenus(); liste.hidden = false; bt.classList.add("ouvert"); } });
+  ouverts.push({ liste: liste, bouton: bt });
+  bloc.appendChild(bt); bloc.appendChild(liste); barreMenus.appendChild(bloc);
+}
+document.addEventListener("pointerdown", function (e) {
+  if (!e.target.closest(".mb")) fermerMenus();
+  if (!e.target.closest(".ico")) { var s = document.querySelectorAll(".ico.sel"); for (var i = 0; i < s.length; i++) s[i].classList.remove("sel"); }
+});
+
+/* ===== SECTION : Fiche d’une ressource (« Lire les informations ») ===== */
+function ouvrirFiche(it) {
+  ouvrirFenetre({
+    id: "fiche-" + it.u, titre: propre(it.t), dlg: true, centre: true, l: 440, redim: false,
+    contenu: function (corps, f) {
+      var cadre = el("div", "fiche"), defile = el("div", "scroll");
+      var tete = el("div", "entete"); tete.appendChild(iconeEl(iconeDe(it), 36)); tete.appendChild(el("span", "", propre(it.t)));
+      defile.appendChild(tete);
+      if (it.i) { var img = el("img"); img.alt = "Couverture de " + propre(it.t); img.src = "../" + it.i; defile.appendChild(img); }
+      defile.appendChild(el("p", "", propre(it.x)));
+      var dl = el("dl");
+      [["Type", (FAMILLES[it.k] || {}).nom || "Autre"], ["Version", it.v ? it.v : "non précisée"], ["Modifié le", dateFr(it.d)],
+       ["Mots-clés", (it.g || []).join(", ")], ["Adresse", adresse(it)]].forEach(function (c) {
+        dl.appendChild(el("dt", "", c[0])); dl.appendChild(el("dd", "", c[1]));
+      });
+      defile.appendChild(dl); cadre.appendChild(defile); corps.appendChild(cadre);
+      var bas = el("div", "bas");
+      bas.appendChild(bouton("bt", "Fermer", function () { fermer(f); }));
+      var ouvrir = bouton("bt defaut", "Ouvrir", function () { ouvrirLien(adresse(it)); });
+      bas.appendChild(ouvrir); corps.appendChild(bas);
+      setTimeout(function () { ouvrir.focus(); }, 0);
+    }
+  });
+}
+
+/* ===== SECTION : Dossiers ===== */
+/* Ressources d’une famille, triées par nom ou par date. */
+function liste(cat, tri) {
+  var r = RESSOURCES.filter(function (it) { return !cat || it.k === cat; });
+  r.sort(function (a, b) {
+    if (tri === "d") return a.d < b.d ? 1 : a.d > b.d ? -1 : 0;
+    var x = simple(a.t), y = simple(b.t); return x < y ? -1 : x > y ? 1 : 0;
+  });
+  return r;
+}
+/* Ouvre un dossier : cat = J, O, C, E ; null = le disque « Casier ». */
+function ouvrirDossier(cat) {
+  var nom = cat ? FAMILLES[cat].nom : "Casier";
+  ouvrirFenetre({
+    id: "dossier-" + (cat || "racine"), titre: nom, l: 540, h: 360,
+    contenu: function (corps) {
+      var vue = "icones", infos = el("div", "infos"), zone = el("div", "zone");
+      var gauche = el("span", ""), droite = el("span", "", cat ? "" : "Disque du casier");
+      infos.appendChild(gauche); infos.appendChild(droite);
+      /* Redessine le contenu selon l’affichage choisi. */
+      function dessiner() {
+        zone.textContent = "";
+        if (!cat) {
+          var g = el("div", "vue-icones");
+          ORDRE_FAMILLES.forEach(function (k) { creerIcone(g, "dossier", FAMILLES[k].nom, function () { ouvrirDossier(k); }); });
+          creerIcone(g, "loupe", "Rechercher", ouvrirRecherche);
+          creerIcone(g, "duel", "Duel", ouvrirDuel);
+          zone.appendChild(g); gauche.textContent = "6 éléments"; return;
+        }
+        var r = liste(cat, vue === "date" ? "d" : "n");
+        gauche.textContent = r.length + " élément(s)";
+        var cont = el("div", vue === "icones" ? "vue-icones" : "vue-liste");
+        r.forEach(function (it) {
+          var b = creerIcone(cont, iconeDe(it), propre(it.t), function () { ouvrirFiche(it); }, vue === "date" ? dateFr(it.d) : null);
+          if (vue !== "icones") b.firstChild.innerHTML = svg(iconeDe(it), 18);
+        });
+        zone.appendChild(cont);
+        if (!r.length) zone.appendChild(el("p", "", "Ce dossier est vide."));
+      }
+      corps.appendChild(infos); corps.appendChild(zone);
+      /* Les choix d’affichage sont rangés dans le menu « Affichage » (voir plus bas). */
+      corps.fenetreVue = function (v) { if (cat) { vue = v; dessiner(); } };
+      dessiner();
+    }
+  });
+}
+/* Change l’affichage de la fenêtre active (menu Affichage). */
+function changerVue(v) { if (actif && actif.corps && actif.corps.fenetreVue) actif.corps.fenetreVue(v); }
+
+/* ===== SECTION : Recherche ===== */
+function ouvrirRecherche() {
+  ouvrirFenetre({
+    id: "recherche", titre: "Rechercher", l: 500, h: 360,
+    contenu: function (corps) {
+      var champ = el("input"); champ.type = "search"; champ.setAttribute("aria-label", "Mot à chercher");
+      champ.placeholder = "Un titre, un mot-clé, un niveau…";
+      var zone = el("div", "zone"), nb = el("span", "", "");
+      /* Filtre sur le titre, la description et les mots-clés. */
+      function chercher() {
+        var mots = simple(champ.value).split(" ").filter(Boolean); zone.textContent = "";
+        var r = RESSOURCES.filter(function (it) {
+          var texte = simple(it.t + " " + it.x + " " + (it.g || []).join(" "));
+          return mots.every(function (m) { return texte.indexOf(m) >= 0; });
+        });
+        var cont = el("div", "vue-liste");
+        r.forEach(function (it) { var b = creerIcone(cont, iconeDe(it), propre(it.t), function () { ouvrirFiche(it); }); b.firstChild.innerHTML = svg(iconeDe(it), 18); });
+        zone.appendChild(cont);
+        if (!r.length) zone.appendChild(el("p", "", "Aucun élément ne correspond."));
+        nb.textContent = r.length + " trouvé(s)";
+      }
+      var haut = el("div", "recherche"); haut.appendChild(el("span", "", "Chercher :")); haut.appendChild(champ);
+      haut.appendChild(bouton("bt", "Chercher", chercher));
+      champ.addEventListener("input", chercher);
+      champ.addEventListener("keydown", function (e) { if (e.key === "Enter") chercher(); });
+      var infos = el("div", "infos"); infos.appendChild(nb);
+      corps.appendChild(haut); corps.appendChild(infos); corps.appendChild(zone);
+      chercher(); setTimeout(function () { champ.focus(); }, 0);
+    }
+  });
+}
+
+/* ===== SECTION : Duel Macintosh contre Windows 98 ===== */
+/* Lit le score (valeurs bornées, repli à zéro si le stockage est invalide). */
+function scoreDuel() {
+  try {
+    var s = JSON.parse(lire(CLE_DUEL) || "{}");
+    return { w: Math.max(0, Math.min(9999, parseInt(s.w, 10) || 0)), m: Math.max(0, Math.min(9999, parseInt(s.m, 10) || 0)) };
+  } catch (e) { return { w: 0, m: 0 }; }
+}
+/* Ouvre la fenêtre du duel. */
+function ouvrirDuel() {
+  ouvrirFenetre({
+    id: "duel", titre: "Duel", l: 400, h: 290, redim: false,
+    contenu: function (corps) {
+      var cadre = el("div", "duel"), res = el("div"), bas = el("div", "bas"); bas.style.justifyContent = "center";
+      cadre.appendChild(el("p", "", "Macintosh contre Windows 98 : qui sera le vainqueur ?"));
+      /* Affiche les scores gardés sur cet ordinateur. */
+      function montrer() {
+        var s = scoreDuel(), total = s.w + s.m; res.textContent = "";
+        if (!total) { res.appendChild(el("p", "", "Aucun vote pour l’instant (les votes restent sur cet ordinateur).")); return; }
+        res.appendChild(el("p", "", "Macintosh : " + s.m + " vote(s) — Windows 98 : " + s.w + " vote(s)"));
+        var b = el("div", "score"), i1 = el("i"), i2 = el("i");
+        i1.style.cssText = "background:#000;width:" + Math.round(s.m / total * 100) + "%"; i2.style.cssText = "background:#fff;width:" + Math.round(s.w / total * 100) + "%";
+        b.appendChild(i1); b.appendChild(i2); res.appendChild(b);
+        res.appendChild(el("p", "", "Noir : Macintosh · Blanc : Windows 98"));
+      }
+      /* Enregistre un vote puis réagit. */
+      function voter(cle) {
+        var s = scoreDuel(); s[cle]++; ecrire(CLE_DUEL, JSON.stringify(s)); montrer();
+        if (cle === "m") boite("Hello ! Macintosh gagne. Merci pour ton vote.", "info", [{ t: "OK" }, { t: "Voir Windows 98", f: function () { aller("../98/"); } }]);
+        else boite("Désolé, une erreur est survenue : Windows 98 a perdu le duel. Le vainqueur est Macintosh.", "bombe", [{ t: "Redémarrer", f: function () { fenetres.slice().forEach(fermer); amorcer(); } }]);
+      }
+      bas.appendChild(bouton("bt", "Windows 98", function () { voter("w"); }));
+      bas.appendChild(bouton("bt defaut", "Macintosh", function () { voter("m"); }));
+      cadre.appendChild(res); cadre.appendChild(bas); corps.appendChild(cadre); montrer();
+    }
+  });
+}
+
+/* ===== SECTION : À propos et confidentialité ===== */
+function ouvrirAPropos() {
+  ouvrirFenetre({
+    id: "apropos", titre: "À propos du Casier", dlg: true, centre: true, l: 460, redim: false,
+    contenu: function (corps, f) {
+      var haut = el("div", "haut"), txt = el("div");
+      haut.appendChild(iconeEl("ordi", 44));
+      [
+        "Casier Macintosh — version 1.0.0 (palier 1), V3 du Casier Pédagogique Numérique.",
+        "Auteur : Tom Rougeaud. Réalisé avec l’aide de l’IA : " + NOM_MODELE + ". Licence : CC BY-NC 4.0.",
+        "Photo des fiches publiées au " + dateFr(DONNEES.date) + " (" + RESSOURCES.length + " ressources), lue dans data-casier.js : elle ne se met pas à jour toute seule. Seules les couvertures du dossier covers/ s’affichent.",
+        "Hommage nostalgique aux ordinateurs de la fin des années 80 et 90. Dessins et textes originaux : la pomme est un fruit, sans logo de marque, et le « hello » vient d’une police cursive du système.",
+        "Confidentialité : aucune donnée ne quitte ton ordinateur, aucun traceur. Seul le score du Duel est gardé dans ce navigateur. Ouvrir une ressource lance son site dans un nouvel onglet."
+      ].forEach(function (t) { txt.appendChild(el("p", "", t)); });
+      haut.appendChild(txt); corps.appendChild(haut);
+      var bas = el("div", "bas");
+      bas.appendChild(bouton("bt", "Effacer mes données", function () {
+        boite("Effacer le score du Duel sur cet ordinateur ?", "question", [{ t: "Effacer", f: function () { effacer(CLE_DUEL); } }, { t: "Annuler" }]);
+      }));
+      var ok = bouton("bt defaut", "OK", function () { fermer(f); }); bas.appendChild(ok);
+      corps.appendChild(bas); setTimeout(function () { ok.focus(); }, 0);
+    }
+  });
+}
+
+/* ===== SECTION : Construction des menus ===== */
+ajouterMenu("", [
+  { t: "À propos du Casier…", f: ouvrirAPropos },
+  { t: "Duel…", f: ouvrirDuel },
+  "-",
+  { t: "Casier classique", f: function () { aller("../"); } },
+  { t: "Version Windows 98", f: function () { aller("../98/"); } }
+], true);
+ajouterMenu("Fichier", [
+  { t: "Ouvrir le disque Casier", f: function () { ouvrirDossier(null); } },
+  { t: "Rechercher…", f: ouvrirRecherche },
+  "-",
+  { t: "Fermer la fenêtre", f: function () { if (actif) fermer(actif); } }
+]);
+ajouterMenu("Affichage", [
+  { t: "par icônes", f: function () { changerVue("icones"); } },
+  { t: "par nom", f: function () { changerVue("nom"); } },
+  { t: "par date", f: function () { changerVue("date"); } }
+]);
+ajouterMenu("Spécial", [
+  { t: "Vider la corbeille…", f: function () { boite("La corbeille est déjà vide.", "info"); } },
+  "-",
+  { t: "Éteindre…", f: boiteArret }
+]);
+var horloge = el("div"); horloge.id = "horloge"; barreMenus.appendChild(horloge);
+/* Heure HH:MM dans la barre de menus. */
+function majHorloge() { horloge.textContent = new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }); }
+
+/* ===== SECTION : Bureau (disque et corbeille) ===== */
+var disque = creerIcone(bureau, "casier", "Casier", function () { ouvrirDossier(null); });
+disque.id = "disque"; disque.classList.add("fixe");
+var poubelle = creerIcone(bureau, "corbeille", "Corbeille", function () {
+  ouvrirFenetre({ id: "corbeille", titre: "Corbeille", l: 340, h: 200, contenu: function (c) { var z = el("div", "zone"); z.appendChild(el("p", "", "La corbeille est vide.")); c.appendChild(z); } });
+});
+poubelle.id = "corbeille"; poubelle.classList.add("fixe");
+
+/* ===== SECTION : Démarrage et arrêt ===== */
+var amorceEl = document.getElementById("amorce"), arretEl = document.getElementById("arret"), minuteur = null;
+/* Affiche l’écran « hello » puis révèle le bureau. */
+function amorcer() {
+  arretEl.hidden = true; amorceEl.hidden = false;
+  var reduit = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  clearTimeout(minuteur); minuteur = setTimeout(finAmorce, reduit ? 600 : 2200);
+  amorceEl.focus();
+}
+/* Termine l’écran de démarrage. */
+function finAmorce() { clearTimeout(minuteur); amorceEl.hidden = true; }
+amorceEl.addEventListener("click", finAmorce);
+amorceEl.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") finAmorce(); });
+arretEl.addEventListener("click", amorcer);
+arretEl.addEventListener("keydown", function (e) { if (e.key === "Enter") amorcer(); });
+/* Boîte « Éteindre » (simulation : la page reste ouverte). */
+function boiteArret() {
+  boite("Voulez-vous vraiment éteindre le Macintosh ?", "question", [
+    { t: "Éteindre", f: function () { fenetres.slice().forEach(fermer); arretEl.hidden = false; arretEl.focus(); } },
+    { t: "Annuler" }
+  ]);
+}
+
+/* ===== SECTION : Raccourcis et erreurs ===== */
+document.addEventListener("keydown", function (e) {
+  if (e.key === "Escape") {
+    if (ouverts.some(function (m) { return !m.liste.hidden; })) { fermerMenus(); return; }
+    if (actif && actif.opt.dlg) fermer(actif);
+  }
+});
+var dejaSignale = false;
+/* Une erreur imprévue affiche un message clair, sans détail technique. */
+window.addEventListener("error", function () {
+  if (dejaSignale) return; dejaSignale = true;
+  try { boite("Un problème est survenu. Ferme la fenêtre et recommence.", "alerte"); } catch (e) {}
+  setTimeout(function () { dejaSignale = false; }, 3000);
+});
+
+/* ===== SECTION : Démarrage de l’appli ===== */
+document.getElementById("logo-amorce").innerHTML = svg("ordi", 72);
+if (!RESSOURCES.length) boite("La liste des ressources n’a pas pu être lue. Vérifie que le fichier data-casier.js est bien à côté du dossier macintosh.", "alerte");
+majHorloge(); setInterval(majHorloge, 15000);
+amorcer();
+})();
+</script>
+</body>
+</html>

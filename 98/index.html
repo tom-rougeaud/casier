@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:;">
 <title>Casier 98 — Casier Pédagogique Numérique</title>
 <!--
-  Projet : Casier V2 « 98 »  ·  Version : 1.0.0  ·  Date : 20/11/2026
+  Projet : Casier V2 « 98 »  ·  Version : 1.1.0  ·  Date : 20/11/2026
   Auteur : Tom Rougeaud  ·  Licence : CC BY-NC 4.0
   Réalisé avec l’aide de l’IA : Claude Sonnet 5.5 (Anthropic)
   Habillage rétro (style « relief gris » de la fin des années 90) du Casier Pédagogique Numérique.
@@ -123,6 +123,15 @@ table.det td svg{vertical-align:middle;margin-right:5px}
 .panneau dl{margin:0;display:grid;grid-template-columns:90px 1fr;gap:4px 8px}
 .panneau dd{margin:0}
 .apercu{width:100%;display:block;border:1px solid #000}
+.vignettes{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}
+.vig{background:none;border:0;padding:5px;text-align:center;display:flex;flex-direction:column;gap:4px;align-items:center;line-height:1.2}
+.vig .im{width:100%;aspect-ratio:16/9;background:#c0c0c0;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:inset 1px 1px #808080,inset -1px -1px #fff}
+.vig .im img{width:100%;height:100%;object-fit:cover;display:block}
+.vig .lib{padding:1px 4px}
+.vig.sel .lib{background:var(--marine);color:#fff;outline:1px dotted #ff0}
+.scene{flex:1;display:flex;align-items:center;justify-content:center;background:#000;min-height:0;margin:0 3px}
+.scene img{max-width:100%;max-height:100%;object-fit:contain}
+.legende{padding:4px 8px;font-weight:bold;text-align:center}
 .boutons{display:flex;gap:8px;justify-content:center;padding:8px 10px 10px;flex-wrap:wrap}
 .boite{display:flex;gap:14px;padding:14px 14px 6px;align-items:flex-start;min-width:280px}
 .boite p{margin:4px 0 0;line-height:1.4;max-width:320px}
@@ -238,6 +247,7 @@ var ICONES = {
   livre: '<path d="M4 6h11v21H4zM17 6h11v21H17z" fill="#f4efe0" stroke="#000"/><path d="M7 11h5M7 15h5M20 11h5M20 15h5" stroke="#7a1f1f"/>',
   liste: '<rect x="6" y="3" width="20" height="26" fill="#fff" stroke="#000"/><path d="M9 9l2 2 3-4M9 17l2 2 3-4M9 25l2 2 3-4M17 10h6M17 18h6M17 26h6" stroke="#006000" stroke-width="1.6" fill="none"/>',
   loupe: '<circle cx="13" cy="13" r="8" fill="#cfe6f5" stroke="#000" stroke-width="2"/><path d="M19 19l9 9" stroke="#000" stroke-width="4"/>',
+  galerie: '<rect x="3" y="5" width="26" height="22" fill="#fff" stroke="#000"/><path d="M5 25l7-9 5 6 4-4 6 7z" fill="#3d6b4a"/><circle cx="22" cy="11" r="2.5" fill="#c9a227"/>',
   duel: '<rect x="2" y="6" width="13" height="12" fill="#c0c0c0" stroke="#000"/><rect x="4" y="8" width="9" height="7" fill="#000080"/><rect x="17" y="6" width="13" height="12" fill="#e8e0c8" stroke="#000"/><rect x="19" y="8" width="9" height="7" fill="#222"/><path d="M13 24l3-3 3 3" stroke="#000" fill="none" stroke-width="2"/>',
   reglages: '<circle cx="16" cy="16" r="9" fill="#c0c0c0" stroke="#000"/><circle cx="16" cy="16" r="3" fill="#000080"/><path d="M16 3v5M16 24v5M3 16h5M24 16h5" stroke="#000" stroke-width="3"/>',
   aide: '<circle cx="16" cy="16" r="13" fill="#1a3a8a" stroke="#000"/><text x="16" y="23" text-anchor="middle" font-size="20" font-weight="bold" fill="#fff" font-family="Arial">?</text>',
@@ -427,7 +437,7 @@ function barreMenu(menus) {
 /* ===== SECTION : Fiche d’une ressource (fenêtre « Propriétés ») ===== */
 function ouvrirFiche(it) {
   ouvrirFenetre({
-    id: "fiche-" + it.u, titre: "Propriétés de " + propre(it.t), icone: iconeDe(it), l: 440, h: 430, redim: false,
+    id: "fiche-" + it.u, titre: "Propriétés de " + propre(it.t), icone: iconeDe(it), l: 520, h: 490, redim: false,
     contenu: function (corps, f) {
       var onglets = el("div", "onglets"); onglets.setAttribute("role", "tablist");
       var general = el("div", "panneau"), apercu = el("div", "panneau");
@@ -442,8 +452,9 @@ function ouvrirFiche(it) {
       });
       general.appendChild(dl);
       /* Onglet Aperçu : couverture si elle est dans le dépôt, sinon message */
-      if (it.i) {
-        var img = el("img", "apercu"); img.alt = "Couverture de " + propre(it.t); img.src = "../" + it.i;
+      var srcImg = vignetteDe(it) || (it.i ? "../" + it.i : null);
+      if (srcImg) {
+        var img = el("img", "apercu"); img.alt = "Aperçu de " + propre(it.t); img.src = srcImg;
         apercu.appendChild(img);
       } else {
         apercu.appendChild(el("p", "", "Pas d’aperçu pour ce fichier."));
@@ -457,7 +468,7 @@ function ouvrirFiche(it) {
       ["Général", "Aperçu"].forEach(function (nom, i) {
         var b = bouton("onglet", nom, function () { choisir(i); }); b.setAttribute("role", "tab"); onglets.appendChild(b);
       });
-      corps.appendChild(onglets); corps.appendChild(general); corps.appendChild(apercu); choisir(0);
+      corps.appendChild(onglets); corps.appendChild(general); corps.appendChild(apercu); choisir(srcImg ? 1 : 0);
       var bas = el("div", "boutons");
       var ouvrir = bouton("relief btn", "Ouvrir", function () { ouvrirLien(adresse(it)); });
       bas.appendChild(ouvrir); bas.appendChild(bouton("relief btn", "Fermer", function () { fermer(f); }));
@@ -482,9 +493,9 @@ function liste(cat, tri) {
 function ouvrirDossier(cat) {
   var nom = cat ? FAMILLES[cat].nom : "Mon Casier";
   ouvrirFenetre({
-    titre: nom, icone: cat ? FAMILLES[cat].icone : "casier", l: 560, h: 380,
+    titre: nom, icone: cat ? FAMILLES[cat].icone : "casier", l: 680, h: 460,
     contenu: function (corps, f) {
-      var vue = "icones", tri = { cle: "d", sens: -1 }, choix = null;
+      var vue = "vignettes", tri = { cle: "d", sens: -1 }, choix = null;
       var zone = el("div", "zone creux"), statut = el("div", "statut"), etat = el("span", "creux", "");
       /* Redessine le contenu selon la vue choisie. */
       function dessiner() {
@@ -493,12 +504,17 @@ function ouvrirDossier(cat) {
           var g = el("div", "vue-icones");
           ORDRE_FAMILLES.forEach(function (k) { creerIcone(g, FAMILLES[k].icone === "jeu" ? "dossier" : "dossier", FAMILLES[k].nom, function () { ouvrirDossier(k); }); });
           creerIcone(g, "loupe", "Rechercher", ouvrirRecherche);
+          creerIcone(g, "galerie", "Galerie", ouvrirGalerie);
           creerIcone(g, "duel", "Duel", ouvrirDuel);
-          zone.appendChild(g); etat.textContent = "6 objet(s)"; return;
+          zone.appendChild(g); etat.textContent = "7 objet(s)"; return;
         }
         var r = liste(cat, tri);
         etat.textContent = r.length + " objet(s)";
-        if (vue === "details") {
+        if (vue === "vignettes") {
+          var gv = el("div", "vignettes");
+          r.forEach(function (it) { creerVignette(gv, it, function () { ouvrirFiche(it); }); });
+          zone.appendChild(gv);
+        } else if (vue === "details") {
           var t = el("table", "det"), tete = el("tr");
           [["t", "Nom"], ["v", "Version"], ["d", "Modifié le"]].forEach(function (c) {
             var th = el("th"), b = bouton("relief", c[1] + (tri.cle === c[0] ? (tri.sens > 0 ? " ▲" : " ▼") : ""), function () {
@@ -531,6 +547,7 @@ function ouvrirDossier(cat) {
         { t: "Fichier", items: [{ t: "Rechercher…", f: ouvrirRecherche }, "-", { t: "Fermer", f: function () { fermer(f); } }] }
       ];
       if (cat) menus.push({ t: "Affichage", items: [
+        { t: "Vignettes", f: function () { vue = "vignettes"; dessiner(); } },
         { t: "Grandes icônes", f: function () { vue = "icones"; dessiner(); } },
         { t: "Liste", f: function () { vue = "liste"; dessiner(); } },
         { t: "Détails", f: function () { vue = "details"; dessiner(); } }
@@ -542,6 +559,66 @@ function ouvrirDossier(cat) {
       corps.appendChild(adr); corps.appendChild(zone);
       statut.appendChild(etat); corps.appendChild(statut);
       dessiner();
+    }
+  });
+}
+
+
+/* ===== SECTION : Aperçus (vignettes) et galerie ===== */
+/* Adresse de la composition d’une ressource (dossier apercus/), ou null s’il n’y en a pas. */
+function vignetteDe(it) { return it.a ? "../apercus/98/" + it.a + ".webp" : null; }
+/* Carte « vignette » : grande image + titre ; une icône remplace l’image si elle est absente. */
+function creerVignette(parent, it, action) {
+  var b = bouton("vig", ""), im = el("span", "im"), src = vignetteDe(it);
+  if (src) {
+    var img = el("img"); img.alt = ""; img.loading = "lazy"; img.src = src;
+    img.addEventListener("error", function () { img.remove(); im.appendChild(iconeEl(iconeDe(it), 40)); });
+    im.appendChild(img);
+  } else im.appendChild(iconeEl(iconeDe(it), 40));
+  b.appendChild(im); b.appendChild(el("span", "lib", propre(it.t)));
+  b.addEventListener("click", function () {
+    var s = parent.querySelectorAll(".vig.sel"); for (var i = 0; i < s.length; i++) s[i].classList.remove("sel");
+    b.classList.add("sel");
+  });
+  b.addEventListener("dblclick", action);
+  b.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); action(); } });
+  parent.appendChild(b);
+  return b;
+}
+/* Galerie : diaporama de tous les aperçus (flèches du clavier, bouton Diaporama pour l’automatique). */
+function ouvrirGalerie() {
+  var liste = RESSOURCES.filter(function (it) { return it.a; });
+  if (!liste.length) { boite("Galerie", "Aucun aperçu n’est disponible.", "info"); return; }
+  ouvrirFenetre({
+    id: "galerie", titre: "Galerie du casier", icone: "galerie", l: 780, h: 560,
+    contenu: function (corps, f) {
+      var i = 0, minuteur = null, scene = el("div", "scene"), img = el("img"), legende = el("div", "legende"), compteur = el("div", "legende");
+      scene.appendChild(img);
+      /* Affiche l’aperçu numéro n (boucle sans fin). */
+      function montrer(n) {
+        i = (n + liste.length) % liste.length; var it = liste[i];
+        img.src = vignetteDe(it); img.alt = "Aperçu de " + propre(it.t);
+        legende.textContent = propre(it.t) + " — " + ((FAMILLES[it.k] || {}).nom || "");
+        compteur.textContent = (i + 1) + " / " + liste.length;
+      }
+      /* Arrête le diaporama automatique. */
+      function arreter() { if (minuteur) { clearInterval(minuteur); minuteur = null; bPlay.textContent = "Diaporama"; } }
+      var bPlay = bouton("relief btn", "Diaporama", function () {
+        if (minuteur) { arreter(); return; }
+        minuteur = setInterval(function () { if (fenetres.indexOf(f) < 0) { clearInterval(minuteur); return; } montrer(i + 1); }, 3500); /* ms entre deux aperçus */
+        bPlay.textContent = "Pause";
+      });
+      var bas = el("div", "boutons");
+      bas.appendChild(bouton("relief btn", "◀ Précédent", function () { arreter(); montrer(i - 1); }));
+      bas.appendChild(bPlay);
+      bas.appendChild(bouton("relief btn", "Suivant ▶", function () { arreter(); montrer(i + 1); }));
+      bas.appendChild(bouton("relief btn", "Fiche…", function () { ouvrirFiche(liste[i]); }));
+      corps.appendChild(scene); corps.appendChild(legende); corps.appendChild(compteur); corps.appendChild(bas);
+      f.el.setAttribute("tabindex", "-1");
+      f.el.addEventListener("keydown", function (e) {
+        if (e.key === "ArrowRight") { arreter(); montrer(i + 1); } else if (e.key === "ArrowLeft") { arreter(); montrer(i - 1); }
+      });
+      montrer(0);
     }
   });
 }
@@ -632,10 +709,10 @@ function ouvrirAPropos() {
     contenu: function (corps, f) {
       var z = el("div", "panneau"); z.style.margin = "4px 6px 0";
       [
-        "Casier 98 — version 1.0.0 (palier 1), V2 du Casier Pédagogique Numérique.",
+        "Casier 98 — version 1.1.0 (palier 1 + aperçus), V2 du Casier Pédagogique Numérique.",
         "Auteur : Tom Rougeaud. Réalisé avec l’aide de l’IA : " + NOM_MODELE + ". Licence : CC BY-NC 4.0.",
         "Photo des fiches publiées au " + dateFr(DONNEES.date) + " (" + RESSOURCES.length + " ressources). La liste est lue dans le fichier data-casier.js : elle ne se met pas à jour toute seule.",
-        "Seules les couvertures hébergées dans le dossier covers/ s’affichent ; les autres fiches ont une icône.",
+        "Les aperçus sont des compositions faites à partir de captures des applis (dossier apercus/) ; les fiches sans aperçu ont une icône.",
         "Hommage nostalgique aux interfaces de la fin des années 90. Dessins et textes originaux, sans lien avec un éditeur de logiciels.",
         "Confidentialité : aucune donnée ne quitte ton ordinateur et aucun traceur n’est utilisé. Seul le score du Duel est gardé dans ce navigateur. Ouvrir une ressource lance simplement le site de la ressource dans un nouvel onglet."
       ].forEach(function (t) { z.appendChild(el("p", "", t)); });
@@ -669,6 +746,7 @@ function construireDemarrer() {
   entree(fly, "duel", "Duel", ouvrirDuel);
   sous.appendChild(prog); sous.appendChild(fly); m.appendChild(sous);
   entree(m, "casier", "Mon Casier", function () { ouvrirDossier(null); });
+  entree(m, "galerie", "Galerie", ouvrirGalerie);
   entree(m, "loupe", "Rechercher…", ouvrirRecherche);
   entree(m, "aide", "À propos", ouvrirAPropos);
   m.appendChild(el("hr"));
@@ -684,7 +762,7 @@ btnDem.addEventListener("click", function (e) {
 });
 document.addEventListener("pointerdown", function (e) {
   if (!e.target.closest(".barre-menu") && !e.target.closest("#menu-demarrer") && !e.target.closest("#btn-demarrer")) fermerMenus();
-  if (!e.target.closest(".ico")) { var s = document.querySelectorAll(".ico.sel"); for (var i = 0; i < s.length; i++) s[i].classList.remove("sel"); }
+  if (!e.target.closest(".ico")) { var s = document.querySelectorAll(".ico.sel, .vig.sel"); for (var i = 0; i < s.length; i++) s[i].classList.remove("sel"); }
 });
 
 /* ===== SECTION : Démarrage et arrêt ===== */
@@ -741,6 +819,7 @@ document.getElementById("logo-demarrage").innerHTML = svg("casier", 64);
 construireDemarrer();
 creerIcone(bureau, "casier", "Mon Casier", function () { ouvrirDossier(null); });
 ORDRE_FAMILLES.forEach(function (k) { creerIcone(bureau, "dossier", FAMILLES[k].nom, function () { ouvrirDossier(k); }); });
+creerIcone(bureau, "galerie", "Galerie", ouvrirGalerie);
 creerIcone(bureau, "loupe", "Rechercher", ouvrirRecherche);
 creerIcone(bureau, "duel", "Duel", ouvrirDuel);
 creerIcone(bureau, "aide", "À propos", ouvrirAPropos);

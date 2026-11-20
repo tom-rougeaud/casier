@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:;">
 <title>Casier Macintosh — Casier Pédagogique Numérique</title>
 <!--
-  Projet : Casier V3 « Macintosh »  ·  Version : 1.0.0  ·  Date : 20/11/2026
+  Projet : Casier V3 « Macintosh »  ·  Version : 1.1.0  ·  Date : 20/11/2026
   Auteur : Tom Rougeaud  ·  Licence : CC BY-NC 4.0
   Réalisé avec l’aide de l’IA : Claude Sonnet 5.5 (Anthropic)
   Habillage rétro (fenêtres rayées, barre de menus, « hello » cursif) du Casier Pédagogique Numérique.
@@ -88,8 +88,18 @@ button{font:inherit;color:inherit;cursor:default}
 .fiche dl{margin:8px 0 0;display:grid;grid-template-columns:90px 1fr;gap:4px 8px}
 .fiche dd{margin:0;user-select:text;-webkit-user-select:text;word-break:break-word}
 .fiche .entete{display:flex;gap:12px;align-items:center;font-weight:bold;font-size:13px;margin-bottom:8px}
-.fiche img{display:block;width:100%;border:2px solid #000;margin:8px 0;filter:grayscale(1) contrast(1.25)}
+.fiche img{display:block;width:100%;border:2px solid #000;margin:8px 0}
 .fiche .scroll{max-height:66vh;overflow:auto;padding-right:4px}
+.vignettes{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.vig{background:none;border:0;padding:4px;display:flex;flex-direction:column;gap:4px;align-items:center;text-align:center;line-height:1.2}
+.vig .im{width:100%;aspect-ratio:16/9;background:#fff;border:2px solid #000;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.vig .im img{width:100%;height:100%;object-fit:cover;display:block}
+.vig .lib{padding:1px 4px;background:#fff}
+.vig.sel .im{outline:3px solid #000}
+.vig.sel .lib{background:#000;color:#fff}
+.scene{flex:1;display:flex;align-items:center;justify-content:center;background:#000;min-height:0;border-bottom:2px solid #000}
+.scene img{max-width:100%;max-height:100%;object-fit:contain}
+.legende{padding:4px 8px;font-weight:bold;text-align:center;border-bottom:2px solid #000;flex:none}
 .recherche{display:flex;gap:8px;padding:8px;align-items:center;border-bottom:2px solid #000;flex:none}
 .recherche input{flex:1;min-height:28px;padding:2px 6px;font:inherit;border:2px solid #000;user-select:text;-webkit-user-select:text;outline:0;background:#fff}
 .duel{padding:16px;text-align:center}
@@ -196,6 +206,7 @@ var ICONES = {
   livre: '<path d="M4 6h11v21H4zM17 6h11v21H17z" ' + T + '/><path d="M7 11h5M7 15h5M20 11h5M20 15h5" stroke="#000"/>',
   liste: '<rect x="6" y="3" width="20" height="26" ' + T + '/><path d="M9 9l2 2 3-4M9 17l2 2 3-4M9 25l2 2 3-4M17 10h6M17 18h6M17 26h6" stroke="#000" stroke-width="1.6" fill="none"/>',
   loupe: '<circle cx="13" cy="13" r="8" ' + T + '/><path d="M19 19l9 9" stroke="#000" stroke-width="4"/>',
+  galerie: '<rect x="3" y="5" width="26" height="22" ' + T + '/><path d="M5 25l7-9 5 6 4-4 6 7z" fill="#000"/><circle cx="22" cy="11" r="2.5" fill="#000"/>',
   duel: '<rect x="2" y="6" width="13" height="12" ' + T + '/><rect x="17" y="6" width="13" height="12" ' + T + '/><path d="M5 12h7M20 12h7" stroke="#000" stroke-width="2"/><path d="M12 25l4-4 4 4" stroke="#000" stroke-width="2" fill="none"/>',
   bombe: '<circle cx="15" cy="19" r="9" fill="#000"/><path d="M20 12l4-5" stroke="#000" stroke-width="2.4"/><path d="M24 7l2-3M24 7l3 1M24 7l-1-3" stroke="#000" stroke-width="1.4"/><circle cx="12" cy="16" r="2" fill="#fff"/>',
   info: '<circle cx="16" cy="16" r="13" ' + T + '/><text x="16" y="23" text-anchor="middle" font-size="20" font-weight="bold" fill="#000" font-family="Georgia,serif">i</text>',
@@ -338,18 +349,19 @@ function ajouterMenu(titre, items, pomme) {
 }
 document.addEventListener("pointerdown", function (e) {
   if (!e.target.closest(".mb")) fermerMenus();
-  if (!e.target.closest(".ico")) { var s = document.querySelectorAll(".ico.sel"); for (var i = 0; i < s.length; i++) s[i].classList.remove("sel"); }
+  if (!e.target.closest(".ico, .vig")) { var s = document.querySelectorAll(".ico.sel, .vig.sel"); for (var i = 0; i < s.length; i++) s[i].classList.remove("sel"); }
 });
 
 /* ===== SECTION : Fiche d’une ressource (« Lire les informations ») ===== */
 function ouvrirFiche(it) {
   ouvrirFenetre({
-    id: "fiche-" + it.u, titre: propre(it.t), dlg: true, centre: true, l: 440, redim: false,
+    id: "fiche-" + it.u, titre: propre(it.t), dlg: true, centre: true, l: 600, redim: false,
     contenu: function (corps, f) {
       var cadre = el("div", "fiche"), defile = el("div", "scroll");
       var tete = el("div", "entete"); tete.appendChild(iconeEl(iconeDe(it), 36)); tete.appendChild(el("span", "", propre(it.t)));
       defile.appendChild(tete);
-      if (it.i) { var img = el("img"); img.alt = "Couverture de " + propre(it.t); img.src = "../" + it.i; defile.appendChild(img); }
+      var srcImg = vignetteDe(it) || (it.i ? "../" + it.i : null);
+      if (srcImg) { var img = el("img"); img.alt = "Aperçu de " + propre(it.t); img.src = srcImg; defile.appendChild(img); }
       defile.appendChild(el("p", "", propre(it.x)));
       var dl = el("dl");
       [["Type", (FAMILLES[it.k] || {}).nom || "Autre"], ["Version", it.v ? it.v : "non précisée"], ["Modifié le", dateFr(it.d)],
@@ -380,9 +392,9 @@ function liste(cat, tri) {
 function ouvrirDossier(cat) {
   var nom = cat ? FAMILLES[cat].nom : "Casier";
   ouvrirFenetre({
-    id: "dossier-" + (cat || "racine"), titre: nom, l: 540, h: 360,
+    id: "dossier-" + (cat || "racine"), titre: nom, l: 680, h: 460,
     contenu: function (corps) {
-      var vue = "icones", infos = el("div", "infos"), zone = el("div", "zone");
+      var vue = "vignettes", infos = el("div", "infos"), zone = el("div", "zone");
       var gauche = el("span", ""), droite = el("span", "", cat ? "" : "Disque du casier");
       infos.appendChild(gauche); infos.appendChild(droite);
       /* Redessine le contenu selon l’affichage choisi. */
@@ -392,11 +404,17 @@ function ouvrirDossier(cat) {
           var g = el("div", "vue-icones");
           ORDRE_FAMILLES.forEach(function (k) { creerIcone(g, "dossier", FAMILLES[k].nom, function () { ouvrirDossier(k); }); });
           creerIcone(g, "loupe", "Rechercher", ouvrirRecherche);
+          creerIcone(g, "galerie", "Galerie", ouvrirGalerie);
           creerIcone(g, "duel", "Duel", ouvrirDuel);
-          zone.appendChild(g); gauche.textContent = "6 éléments"; return;
+          zone.appendChild(g); gauche.textContent = "7 éléments"; return;
         }
         var r = liste(cat, vue === "date" ? "d" : "n");
         gauche.textContent = r.length + " élément(s)";
+        if (vue === "vignettes") {
+          var gv = el("div", "vignettes");
+          r.forEach(function (it) { creerVignette(gv, it, function () { ouvrirFiche(it); }); });
+          zone.appendChild(gv); if (!r.length) zone.appendChild(el("p", "", "Ce dossier est vide.")); return;
+        }
         var cont = el("div", vue === "icones" ? "vue-icones" : "vue-liste");
         r.forEach(function (it) {
           var b = creerIcone(cont, iconeDe(it), propre(it.t), function () { ouvrirFiche(it); }, vue === "date" ? dateFr(it.d) : null);
@@ -414,6 +432,66 @@ function ouvrirDossier(cat) {
 }
 /* Change l’affichage de la fenêtre active (menu Affichage). */
 function changerVue(v) { if (actif && actif.corps && actif.corps.fenetreVue) actif.corps.fenetreVue(v); }
+
+
+/* ===== SECTION : Aperçus (vignettes) et galerie ===== */
+/* Adresse de la composition d’une ressource (dossier apercus/), ou null s’il n’y en a pas. */
+function vignetteDe(it) { return it.a ? "../apercus/mac/" + it.a + ".webp" : null; }
+/* Carte « vignette » : grande image + titre ; une icône remplace l’image si elle est absente. */
+function creerVignette(parent, it, action) {
+  var b = bouton("vig", ""), im = el("span", "im"), src = vignetteDe(it);
+  if (src) {
+    var img = el("img"); img.alt = ""; img.loading = "lazy"; img.src = src;
+    img.addEventListener("error", function () { img.remove(); im.appendChild(iconeEl(iconeDe(it), 40)); });
+    im.appendChild(img);
+  } else im.appendChild(iconeEl(iconeDe(it), 40));
+  b.appendChild(im); b.appendChild(el("span", "lib", propre(it.t)));
+  b.addEventListener("click", function () {
+    var s = parent.querySelectorAll(".vig.sel"); for (var i = 0; i < s.length; i++) s[i].classList.remove("sel");
+    b.classList.add("sel");
+  });
+  b.addEventListener("dblclick", action);
+  b.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); action(); } });
+  parent.appendChild(b);
+  return b;
+}
+/* Galerie : diaporama de tous les aperçus (flèches du clavier, bouton Diaporama pour l’automatique). */
+function ouvrirGalerie() {
+  var liste = RESSOURCES.filter(function (it) { return it.a; });
+  if (!liste.length) { boite("Aucun aperçu n’est disponible.", "info"); return; }
+  ouvrirFenetre({
+    id: "galerie", titre: "Galerie du casier",  l: 780, h: 560,
+    contenu: function (corps, f) {
+      var i = 0, minuteur = null, scene = el("div", "scene"), img = el("img"), legende = el("div", "legende"), compteur = el("div", "legende");
+      scene.appendChild(img);
+      /* Affiche l’aperçu numéro n (boucle sans fin). */
+      function montrer(n) {
+        i = (n + liste.length) % liste.length; var it = liste[i];
+        img.src = vignetteDe(it); img.alt = "Aperçu de " + propre(it.t);
+        legende.textContent = propre(it.t) + " — " + ((FAMILLES[it.k] || {}).nom || "");
+        compteur.textContent = (i + 1) + " / " + liste.length;
+      }
+      /* Arrête le diaporama automatique. */
+      function arreter() { if (minuteur) { clearInterval(minuteur); minuteur = null; bPlay.textContent = "Diaporama"; } }
+      var bPlay = bouton("bt", "Diaporama", function () {
+        if (minuteur) { arreter(); return; }
+        minuteur = setInterval(function () { if (fenetres.indexOf(f) < 0) { clearInterval(minuteur); return; } montrer(i + 1); }, 3500); /* ms entre deux aperçus */
+        bPlay.textContent = "Pause";
+      });
+      var bas = el("div", "bas"); bas.style.justifyContent = "center";
+      bas.appendChild(bouton("bt", "◀ Précédent", function () { arreter(); montrer(i - 1); }));
+      bas.appendChild(bPlay);
+      bas.appendChild(bouton("bt", "Suivant ▶", function () { arreter(); montrer(i + 1); }));
+      bas.appendChild(bouton("bt", "Fiche…", function () { ouvrirFiche(liste[i]); }));
+      corps.appendChild(scene); corps.appendChild(legende); corps.appendChild(compteur); corps.appendChild(bas);
+      f.el.setAttribute("tabindex", "-1");
+      f.el.addEventListener("keydown", function (e) {
+        if (e.key === "ArrowRight") { arreter(); montrer(i + 1); } else if (e.key === "ArrowLeft") { arreter(); montrer(i - 1); }
+      });
+      montrer(0);
+    }
+  });
+}
 
 /* ===== SECTION : Recherche ===== */
 function ouvrirRecherche() {
@@ -493,9 +571,9 @@ function ouvrirAPropos() {
       var haut = el("div", "haut"), txt = el("div");
       haut.appendChild(iconeEl("ordi", 44));
       [
-        "Casier Macintosh — version 1.0.0 (palier 1), V3 du Casier Pédagogique Numérique.",
+        "Casier Macintosh — version 1.1.0 (palier 1 + aperçus), V3 du Casier Pédagogique Numérique.",
         "Auteur : Tom Rougeaud. Réalisé avec l’aide de l’IA : " + NOM_MODELE + ". Licence : CC BY-NC 4.0.",
-        "Photo des fiches publiées au " + dateFr(DONNEES.date) + " (" + RESSOURCES.length + " ressources), lue dans data-casier.js : elle ne se met pas à jour toute seule. Seules les couvertures du dossier covers/ s’affichent.",
+        "Photo des fiches publiées au " + dateFr(DONNEES.date) + " (" + RESSOURCES.length + " ressources), lue dans data-casier.js : elle ne se met pas à jour toute seule. Les aperçus sont des compositions faites à partir de captures des applis (dossier apercus/).",
         "Hommage nostalgique aux ordinateurs de la fin des années 80 et 90. Dessins et textes originaux : la pomme est un fruit, sans logo de marque, et le « hello » vient d’une police cursive du système.",
         "Confidentialité : aucune donnée ne quitte ton ordinateur, aucun traceur. Seul le score du Duel est gardé dans ce navigateur. Ouvrir une ressource lance son site dans un nouvel onglet."
       ].forEach(function (t) { txt.appendChild(el("p", "", t)); });
@@ -520,11 +598,13 @@ ajouterMenu("", [
 ], true);
 ajouterMenu("Fichier", [
   { t: "Ouvrir le disque Casier", f: function () { ouvrirDossier(null); } },
+  { t: "Galerie…", f: ouvrirGalerie },
   { t: "Rechercher…", f: ouvrirRecherche },
   "-",
   { t: "Fermer la fenêtre", f: function () { if (actif) fermer(actif); } }
 ]);
 ajouterMenu("Affichage", [
+  { t: "par vignettes", f: function () { changerVue("vignettes"); } },
   { t: "par icônes", f: function () { changerVue("icones"); } },
   { t: "par nom", f: function () { changerVue("nom"); } },
   { t: "par date", f: function () { changerVue("date"); } }

@@ -23,7 +23,7 @@
     w31: ["#000", "#c0c0c0", "#808080", "l’ordinateur"], amiga: ["#0055aa", "#fff", "#ff8800", "l’ordinateur"],
     beos: ["#336699", "#fff", "#ffcb00", "l’ordinateur"], minitel: ["#000", "#d8e4d4", "#8ea58a", "le Minitel"],
     c64: ["#4a45b0", "#b9b5f5", "#8f8be0", "l’ordinateur"], apple2: ["#000", "#f0a800", "#a87400", "le moniteur"],
-    horizon: ["#0b0d12", "#e8eaf2", "#6b78e0", "l’écran"], atomique: ["#efe3c8", "#3b2a20", "#c8553d", "le poste"]
+    horizon: ["#0b0d12", "#e8eaf2", "#6b78e0", "l’écran"], atomique: ["#120c07", "#f1e6c9", "#b8412f", "le poste"]
   };
 
   /* ===== SECTION : Son (Web Audio, tout est synthétisé) ===== */
@@ -206,13 +206,16 @@
     ".i-horizon p{position:relative;z-index:2;margin:10px 0 0;font:300 min(4.4vw,22px) system-ui,sans-serif;letter-spacing:.3em;text-transform:uppercase;opacity:.75;animation:ifondu 1s 1.4s both}",
     ".i-horizon .trait{position:relative;z-index:2;height:2px;width:min(60vw,420px);background:linear-gradient(90deg,transparent,#e8eaf2,transparent);margin-top:26px;animation:irevele 1.4s 1s both}",
 
-    /* Atomique (rétro-futuriste) : rayons, atome, grain */
-    ".i-atomique{background:#efe3c8;color:#3b2a20}",
-    ".i-atomique .rayons{position:absolute;inset:-50%;background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(200,85,61,.16) 0 7.5deg,transparent 7.5deg 15deg);animation:irot 40s linear infinite}",
-    ".i-atomique .atome{position:relative;z-index:2;animation:ifondu 1s both}.i-atomique .atome .o1{animation:irot 6s linear infinite;transform-origin:center}",
-    ".i-atomique h1{position:relative;z-index:2;font:900 min(13vw,92px)/1 'Futura','Century Gothic','Trebuchet MS',sans-serif;letter-spacing:.12em;margin:10px 0 0;color:#c8553d;text-shadow:3px 3px 0 #efe3c8,6px 6px 0 #2f6f73;animation:imonte .9s .5s both}",
-    ".i-atomique p{position:relative;z-index:2;margin:18px 0 0;font:14px 'Courier New',monospace;letter-spacing:.25em;text-transform:uppercase;animation:ifondu 1s 1.3s both}",
-    ".i-atomique .grain{position:absolute;inset:0;opacity:.28;mix-blend-mode:multiply;pointer-events:none;background-image:url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 .2  0 0 0 0 .15  0 0 0 0 .1  0 0 0 .9 0'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>\")}"
+    /* Atomique (années 50) : tube cathodique qui chauffe, mire, atome, grain de pellicule */
+    ".i-atomique{background:#120c07;color:#f1e6c9}",
+    ".i-atomique .tube{position:absolute;inset:0;overflow:hidden;background:radial-gradient(ellipse at 50% 48%,#f1e6c9 0,#d9c9a0 45%,#8a7650 100%);animation:ichauffe 1.5s .2s cubic-bezier(.2,.8,.2,1) both;transform-origin:center}",
+    ".i-atomique .rayons{position:absolute;inset:-60%;background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(184,65,47,.2) 0 7.5deg,rgba(214,164,58,.14) 7.5deg 15deg);animation:irot 70s linear infinite}",
+    ".i-atomique .centre{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}",
+    ".i-atomique .atome{position:relative;z-index:2;animation:ifondu 1s 1.5s both;filter:drop-shadow(4px 5px 0 rgba(42,33,24,.35))}.i-atomique .atome .o1{animation:irot 6s linear infinite;transform-origin:center}",
+    ".i-atomique h1{position:relative;z-index:2;font:900 min(14vw,100px)/1 'Rockwell','Bitter','Clarendon','Georgia',serif;font-style:italic;letter-spacing:.04em;margin:10px 0 0;color:#b8412f;text-shadow:2px 2px 0 #f1e6c9,5px 5px 0 #2a2118;animation:imonte .9s 1.9s both}",
+    ".i-atomique p{position:relative;z-index:2;margin:18px 0 0;font:bold 14px 'Courier New',monospace;letter-spacing:.28em;text-transform:uppercase;color:#2a2118;animation:ifondu 1s 2.7s both}",
+    ".i-atomique .scan{position:absolute;inset:0;z-index:4;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.14) 0 1px,transparent 1px 3px),radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.6))}",
+    ".i-atomique .grain{position:absolute;inset:0;z-index:5;opacity:.3;mix-blend-mode:multiply;pointer-events:none;background-image:url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 .2  0 0 0 0 .15  0 0 0 0 .1  0 0 0 .9 0'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>\")}",
   ].join("\n");
   function injecterStyle() {
     if (document.getElementById("intros-style")) return;
@@ -320,11 +323,14 @@
     return 3.8;
   };
   SCENES.atomique = function (r) {
-    r.innerHTML = '<div class="rayons"></div>' + atome() + '<h1>CASIER</h1><p>Le futur, version 1982</p><div class="grain"></div>';
-    balayage(80, 440, 0.1, 1.8, 0.12);
-    accord([220, 277.18, 329.63, 415.3], 1.7, 2.4, "sawtooth", 0.03, 0.05);
-    ton(880, 1.7, 0.4, "square", 0.05); ton(1318.5, 2.1, 1.2, "triangle", 0.08);
-    return 4.2;
+    r.innerHTML = '<div class="tube"><div class="rayons"></div><div class="centre">' + atome() + '<h1>CASIER</h1><p>Émission d’essai · édition 1957</p></div><div class="scan"></div></div><div class="grain"></div>';
+    /* Ronflement du transformateur, sifflement aigu du tube qui chauffe, craquements, puis jingle de radio */
+    ton(60, 0, 4.4, "sawtooth", 0.05, 0, 0.3); ton(120, 0, 4.4, "sine", 0.05, 0, 0.3);
+    ton(3200, 0.15, 1.6, "sine", 0.03, 5200, 0.5);
+    bruit(0.1, 1.6, 2500, 0.05, 0.8, "highpass"); bruit(0.9, 0.12, 1800, 0.12, 2); bruit(1.7, 0.1, 2200, 0.1, 2); bruit(2.6, 0.08, 2000, 0.08, 2);
+    [523.25, 659.25, 783.99, 1046.5].forEach(function (f, i) { ton(f, 1.6 + i * 0.2, 1.3, "triangle", 0.1, 0, 0.01); ton(f * 2, 1.6 + i * 0.2, 0.9, "sine", 0.04, 0, 0.01); });
+    accord([261.63, 329.63, 392], 2.5, 1.9, "triangle", 0.07, 0.03);
+    return 4.6;
   };
 
   /* ===== SECTION : Porte « appuie pour allumer », lecture, sortie ===== */

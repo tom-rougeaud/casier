@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:">
 <meta name="description" content="Casier pédagogique — version Atomique : un site vitrine animé (défilement, parallaxe, effets de profondeur).">
 <title>Casier Atomique — Casier pédagogique</title>
 <!--
@@ -122,30 +122,57 @@ footer small{display:block;margin-top:34px;opacity:.65}
 @media (max-width:560px){nav .liens a:nth-child(-n+2){display:none}}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}.chiffre{opacity:1;transform:none}#phrase .mot{opacity:1}}
 
-:root{--fond:#efe3c8;--txt:#3b2a20;--a1:#c8553d;--a2:#2f6f73;--a3:#d9a441;--surtxt:#fff7e6;--carte:#f8efd9;--bord:3px solid #3b2a20;--rayon:30px;--ombre:7px 7px 0 #3b2a20;--voile:rgba(59,42,32,.88);--voile2:rgba(59,42,32,.6);--panneau:#f8efd9;--navfond:rgba(239,227,200,.8);--police:"Futura","Century Gothic","Trebuchet MS","Avenir Next",sans-serif}
-body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:300;opacity:.3;mix-blend-mode:multiply;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/><feColorMatrix values='0 0 0 0 .22  0 0 0 0 .16  0 0 0 0 .1  0 0 0 .9 0'/></filter><rect width='180' height='180' filter='url(%23n)'/></svg>")}
-body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:299;background:radial-gradient(ellipse at center,transparent 60%,rgba(59,42,32,.28))}
-h2,#titre,.famille h3,.footer .gros,footer .gros{text-transform:uppercase}
-#titre{color:var(--a1);text-shadow:.03em .03em 0 var(--fond),.06em .06em 0 var(--a2);letter-spacing:-.02em}
-nav{border-bottom:3px solid var(--txt)}
-nav .liens{font-family:"Courier New",monospace;text-transform:uppercase;letter-spacing:.1em}
-#sous,.defil,.puce-f,.chiffre span,.vitrine figcaption{font-family:"Courier New","DejaVu Sans Mono",monospace}
-.rayons{position:absolute;inset:-60%;background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(200,85,61,.16) 0 7.5deg,transparent 7.5deg 15deg);animation:tourne 90s linear infinite}
+/* ===== THÈME ATOMIQUE · années 50 : bakélite, bois, chrome, papier jauni. Polices embarquées (licence SIL OFL, voir polices/LICENCES.txt) ===== */
+@font-face{font-family:"Bitter";src:url("polices/bitter.woff") format("woff");font-weight:100 900;font-style:normal;font-display:swap}
+@font-face{font-family:"Bitter";src:url("polices/bitter-italic.woff") format("woff");font-weight:100 900;font-style:italic;font-display:swap}
+@font-face{font-family:"Archivo Black";src:url("polices/archivo-black.woff") format("woff");font-weight:400;font-display:swap}
+@font-face{font-family:"Anonymous Pro";src:url("polices/anonymous-pro.woff") format("woff");font-weight:400;font-display:swap}
+@font-face{font-family:"Anonymous Pro";src:url("polices/anonymous-pro-bold.woff") format("woff");font-weight:700;font-display:swap}
+:root{--fond:#e4d6b4;--txt:#2a2118;--a1:#b8412f;--a2:#3f7a76;--a3:#d6a43a;--surtxt:#f6ecd2;--carte:#efe3c3;--bord:3px solid #2a2118;--rayon:18px;
+ --ombre:6px 8px 0 rgba(42,33,24,.85);--voile:rgba(42,33,24,.9);--voile2:rgba(42,33,24,.62);--panneau:#efe3c3;--navfond:rgba(228,214,180,.9);
+ --police:"Bitter","Rockwell","Clarendon","Georgia",serif;--mono:"Anonymous Pro","Courier New",monospace;
+ --papier:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='3' seed='5'/><feColorMatrix values='0 0 0 0 .3  0 0 0 0 .2  0 0 0 0 .1  0 0 0 1.1 -.3'/></filter><rect width='240' height='240' filter='url(%23p)'/></svg>");
+ --bake:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='k'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='3'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1.2 -.4'/></filter><rect width='200' height='200' filter='url(%23k)'/></svg>");
+ --bois:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='360'><filter id='b'><feTurbulence type='fractalNoise' baseFrequency='.006 .2' numOctaves='5' seed='4'/><feColorMatrix values='0 0 0 0 .16  0 0 0 0 .08  0 0 0 0 .02  0 0 0 1.9 -.55'/></filter><rect width='600' height='360' filter='url(%23b)'/></svg>");
+ --brosse:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='500' height='340'><filter id='m'><feTurbulence type='fractalNoise' baseFrequency='.0015 .9' numOctaves='3' seed='2'/><feColorMatrix values='0 0 0 0 .1  0 0 0 0 .12  0 0 0 0 .12  0 0 0 1.5 -.45'/></filter><rect width='500' height='340' filter='url(%23m)'/></svg>");
+ --chrome:linear-gradient(135deg,#fdfdfb 0%,#98a1a1 18%,#f6f8f6 34%,#5f6969 52%,#e8ebe9 70%,#8a9494 86%,#d6dbd9 100%)}
+body{background-color:var(--fond);background-image:var(--papier),url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><g fill='none' stroke='%23b8412f' stroke-width='2.2' opacity='.16'><ellipse cx='30' cy='30' rx='17' ry='6'/><ellipse cx='30' cy='30' rx='17' ry='6' transform='rotate(60 30 30)'/><ellipse cx='30' cy='30' rx='17' ry='6' transform='rotate(120 30 30)'/></g><path d='M90 84l3.4 7.6 8.4.8-6.4 5.6 2 8.2-7.4-4.4-7.4 4.4 2-8.2-6.4-5.6 8.4-.8z' fill='%233f7a76' opacity='.16'/></svg>");background-blend-mode:multiply,normal}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:300;opacity:.26;mix-blend-mode:multiply;background-image:var(--papier)}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:299;background:radial-gradient(ellipse at center,transparent 55%,rgba(60,35,15,.38))}
+h2,#titre,.famille h3,.footer .gros,footer .gros{text-transform:uppercase;font-family:"Archivo Black","Bitter",serif;font-weight:400;letter-spacing:.005em}
+#titre{color:var(--a1);font-size:clamp(60px,17vw,230px);text-shadow:1px 1px 0 #f6ecd2,3px 3px 0 var(--txt),6px 7px 0 rgba(42,33,24,.35);letter-spacing:.01em}
+#sous,#hero .annonce{font-family:var(--police);font-style:italic;font-weight:800;text-transform:none;letter-spacing:.02em}
+#hero .annonce{color:var(--txt);text-shadow:1px 1px 0 #f6ecd2}
+nav{border-bottom:4px solid #17110a;background:var(--navfond);box-shadow:0 4px 0 #8a7b5c}
+nav::after{content:"";position:absolute;inset:0;pointer-events:none;background-image:var(--brosse);mix-blend-mode:multiply;opacity:.4}
+nav .liens{font-family:var(--mono);font-weight:700;text-transform:uppercase;letter-spacing:.14em}
+.defil,.puce-f,.chiffre span,.vitrine figcaption,.fiche small,#defile{font-family:var(--mono);font-weight:700;letter-spacing:.14em}
+.rayons{position:absolute;inset:-60%;background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(184,65,47,.17) 0 7.5deg,rgba(214,164,58,.1) 7.5deg 15deg);animation:tourne 120s linear infinite}
 @keyframes tourne{to{transform:rotate(360deg)}}
-.orbe{filter:none;border-radius:50%;opacity:.9;border:3px solid var(--txt)}
-.orbe.o1{width:26vmin;height:26vmin;left:10%;top:16%;background:var(--a3)}
-.orbe.o2{width:34vmin;height:34vmin;right:8%;bottom:10%;background:var(--a2)}
-.orbe.o3{width:14vmin;height:14vmin;right:26%;top:10%;background:var(--a1)}
-.chiffre strong{background:none;color:var(--a1);-webkit-text-fill-color:currentColor}
-.chiffre:nth-child(even){background:#e6d4a8}
-.vitrine,.fiche,.famille,.chiffre,#panneau{box-shadow:var(--ombre)}
-.vitrine::after,.fiche img{filter:sepia(.25) saturate(.95) contrast(1.02)}
-.vitrine::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.12) 0 1px,transparent 1px 3px)}
-.famille:nth-child(1){--fam:#d9a441}.famille:nth-child(2){--fam:#2f6f73;color:#fff7e6}.famille:nth-child(3){--fam:#c8553d;color:#fff7e6}.famille:nth-child(4){--fam:#e6d4a8}
-.famille li button{color:var(--txt)}
-.btn{box-shadow:4px 4px 0 var(--txt);border:3px solid var(--txt)}
-.defil{background:var(--txt);color:var(--fond);border:0}.defil span:nth-child(3n),.defil span:nth-child(3n+1){color:var(--a3)}
-#hero .annonce{color:var(--txt);text-transform:uppercase}
+.orbe{filter:none;border-radius:50%;opacity:1;border:4px solid #17110a;box-shadow:inset -10px -14px 22px rgba(0,0,0,.35),inset 8px 8px 14px rgba(255,255,255,.35),8px 10px 0 rgba(42,33,24,.3)}
+.orbe.o1{width:24vmin;height:24vmin;left:9%;top:16%;background:radial-gradient(circle at 35% 30%,#f2cf7a,#d6a43a 55%,#8c6416)}
+.orbe.o2{width:32vmin;height:32vmin;right:7%;bottom:9%;background:radial-gradient(circle at 35% 30%,#8fc0b9,#3f7a76 55%,#1f4745)}
+.orbe.o3{width:13vmin;height:13vmin;right:26%;top:10%;background:radial-gradient(circle at 35% 30%,#e88c7a,#b8412f 55%,#6c2417)}
+/* cartes : bakélite, bois, métal, papier — avec biseaux et ombres dures */
+.vitrine,.fiche,.famille,.chiffre,#panneau{box-shadow:var(--ombre),inset 0 3px 0 rgba(255,255,255,.35),inset 0 -8px 14px rgba(0,0,0,.18);border:3px solid #17110a}
+.chiffre,.fiche{position:relative}
+.famille,.chiffre{background-blend-mode:multiply}
+.famille::before,.chiffre::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;mix-blend-mode:multiply;background-image:var(--bake);opacity:.55}
+.famille:nth-child(1){--fam:linear-gradient(135deg,#e3b34c,#b98820);color:var(--txt)}
+.famille:nth-child(2){--fam:linear-gradient(135deg,#4a8b86,#2b5855);color:#f6ecd2}
+.famille:nth-child(3){--fam:linear-gradient(135deg,#c64f3b,#8a2c1d);color:#f6ecd2}
+.famille:nth-child(4){--fam:linear-gradient(135deg,#a4713f,#6a4228);color:#f6ecd2}
+.famille:nth-child(4)::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;mix-blend-mode:multiply;background-image:var(--bois);opacity:.7}
+.famille li button{color:var(--txt);border:2px solid #17110a;font-family:var(--mono);font-weight:700;letter-spacing:.04em}
+.chiffre{background:linear-gradient(135deg,#f3ead0,#d9cba6)}.chiffre:nth-child(even){background:linear-gradient(135deg,#c1c9c6,#8d9895)}
+.chiffre strong{background:none;color:var(--a1);-webkit-text-fill-color:currentColor;font-family:"Archivo Black",serif;font-weight:400;text-shadow:1px 1px 0 rgba(255,255,255,.7)}
+.vitrine{background:var(--chrome);padding:7px;border-radius:14px}
+.vitrine img,.fiche img{filter:none}
+.vitrine::after{display:none}
+.fiche{background:var(--panneau)}
+@media(max-width:520px){nav b{font-size:13px}nav .liens{font-size:11px;letter-spacing:.05em;gap:8px}}
+.btn{box-shadow:4px 5px 0 #17110a,inset 0 2px 0 rgba(255,255,255,.4);border:3px solid #17110a;font-family:var(--mono);font-weight:700;letter-spacing:.12em;text-transform:uppercase;border-radius:12px}
+.defil{background:#17110a;color:var(--fond);border:0}.defil span:nth-child(3n),.defil span:nth-child(3n+1){color:var(--a3)}
 
 </style>
 </head>
@@ -160,7 +187,7 @@ nav .liens{font-family:"Courier New",monospace;text-transform:uppercase;letter-s
   <div class="epingle">
     <div class="rayons"></div><i class="orbe o1"></i><i class="orbe o2"></i><i class="orbe o3"></i>
     <h1 id="titre" aria-label="Casier"></h1>
-    <p id="sous">Le casier du futur · modèle 1982</p>
+    <p id="sous">Le casier de demain · édition 1957</p>
     <div class="annonce" id="annonce">Le progrès est en marche.</div>
     <div id="defile">Défile<i></i></div>
   </div>
@@ -181,11 +208,11 @@ nav .liens{font-family:"Courier New",monospace;text-transform:uppercase;letter-s
 <div id="voile" role="dialog" aria-modal="true" aria-label="Fiche"><div id="panneau"><button id="fermer" type="button" aria-label="Fermer">✕</button><div id="contenu"></div></div></div>
 <div id="curseur" aria-hidden="true"></div>
 <script src="../data-casier.js"></script>
-<script src="../intros.js?v=2"></script>
+<script src="../intros.js?v=3"></script>
 <script>
 (function () {
   "use strict";
-  var CONF = {"cle": "atomique", "apercus": "xp", "fam": ["#d9a441", "#2f6f73", "#c8553d", "#e6d4a8"]};
+  var CONF = {"cle": "atomique", "apercus": "atomique", "fam": ["#d9a441", "#2f6f73", "#c8553d", "#e6d4a8"]};
   var D = window.CASIER || { base: "", items: [] }, R = D.items || [];
   var FAM = { J: "Jeux", O: "Outils", C: "Cours et manuels", E: "Évaluations" }, ORDRE = ["J", "O", "C", "E"];
   var reduit = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);

@@ -5,7 +5,7 @@
   Rôle : à chaque ouverture d’un thème, une petite intro animée (logo dessiné ici, jingle fabriqué par Web Audio).
   Tout est original : aucun logo, aucune image et aucun son d’une marque réelle ; rien n’est téléchargé.
   Usage : <script src="../intros.js"></script> puis INTROS.lancer("98", function () { suite(); });
-  Données : une seule préférence facultative, « ne plus afficher l’intro » (clé casier_intros_v1, sur cet appareil seulement).
+  Données : aucune (l’intro est toujours jouée en entier, sans réglage ni stockage).
 */
 (function () {
   "use strict";
@@ -114,9 +114,7 @@
     "#intro-marche{width:92px;height:92px;border-radius:50%;border:3px solid currentColor;background:transparent;color:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;animation:ipulse 2.4s ease-in-out infinite}",
     "#intro-marche:focus-visible,.intro-lien:focus-visible{outline:3px solid currentColor;outline-offset:4px}",
     ".intro-lien{background:none;border:0;color:inherit;opacity:.75;text-decoration:underline;font:inherit;cursor:pointer;padding:6px}",
-    "#intro-porte label{font-size:14px;opacity:.8;cursor:pointer}",
     "@keyframes ipulse{50%{box-shadow:0 0 0 14px rgba(255,255,255,.08)}}",
-    "#intro .passer{position:absolute;right:14px;bottom:12px;font-size:13px;opacity:.65;z-index:5}",
     "#intro .mono{font-family:'Courier New','DejaVu Sans Mono','Liberation Mono',monospace}",
     "@keyframes ifondu{from{opacity:0}to{opacity:1}}",
     "@keyframes imonte{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}",
@@ -344,40 +342,30 @@
   /* Lance l’intro du thème puis appelle fin(). Si l’intro est désactivée, fin() est appelée aussitôt. */
   function lancer(theme, fin) {
     var suite = function () { try { if (typeof fin === "function") fin(); } catch (e) { /* ignoré */ } };
-    if (lire() === "off" || !SCENES[theme]) { suite(); return; }
+    if (!SCENES[theme]) { suite(); return; }
     injecterStyle();
     var P = PORTES[theme] || PORTES["98"];
     var porte = document.createElement("div");
     porte.id = "intro-porte"; porte.className = "p-" + theme;
     porte.style.cssText = "background:" + P[0] + ";color:" + P[1];
     porte.setAttribute("role", "dialog"); porte.setAttribute("aria-label", "Allumer");
-    porte.innerHTML = '<button id="intro-marche" type="button" aria-label="Allumer ' + P[3] + '">' + ICO_MARCHE + '</button>' +
-      '<div>Appuie pour allumer ' + P[3] + '</div><label><input type="checkbox" id="intro-non" autocomplete="off"> Ne plus afficher l’intro</label>' +
-      '<button type="button" class="intro-lien" id="intro-sans">Passer sans intro</button>';
+    /* Seul le bouton marche / arrêt est visible : aucun texte, et l’intro est toujours jouée en entier. */
+    porte.innerHTML = '<button id="intro-marche" type="button" aria-label="Allumer ' + P[3] + '">' + ICO_MARCHE + '</button>';
     porte.querySelector("#intro-marche").style.color = P[1];
     document.body.appendChild(porte);
     var b = porte.querySelector("#intro-marche"); try { b.focus({ preventScroll: true }); } catch (e) { /* ignoré */ }
-    function memoriser() { if (porte.querySelector("#intro-non").checked) ecrire("off"); }
-    porte.querySelector("#intro-sans").addEventListener("click", function () { memoriser(); sortir(porte, suite); });
     b.addEventListener("click", function () {
-      memoriser();
       /* Plein écran à ce premier geste (si le navigateur l’autorise). */
       try { if (!document.fullscreenElement && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(function () {}); } catch (e) { /* ignoré */ }
       var c = audio(); if (c) { try { c.resume(); } catch (e) { /* ignoré */ } T0 = c.currentTime + 0.05; if (maitre) { maitre.gain.cancelScheduledValues(c.currentTime); maitre.gain.setValueAtTime(0.55, c.currentTime); } }
       var rac = document.createElement("div");
       rac.id = "intro"; rac.className = "i-" + theme; rac.setAttribute("aria-label", "Introduction animée");
-      var passer = document.createElement("button"); passer.type = "button"; passer.className = "intro-lien passer"; passer.textContent = "Passer ⏵";
-      passer.style.color = P[1];
       var duree = 4;
       try { duree = SCENES[theme](rac, c) || 4; } catch (e) { duree = 0.2; }
-      rac.appendChild(passer);
       document.body.appendChild(rac);
       porte.classList.add("fin"); setTimeout(function () { if (porte.parentNode) porte.parentNode.removeChild(porte); }, 480);
       var fini = false;
-      function terminer() { if (fini) return; fini = true; document.removeEventListener("keydown", cle, true); sortir(rac, suite); }
-      function cle(e) { if (e.key === "Escape" || e.key === "Enter" || e.key === " ") { e.preventDefault(); terminer(); } }
-      passer.addEventListener("click", terminer); rac.addEventListener("dblclick", terminer);
-      document.addEventListener("keydown", cle, true);
+      function terminer() { if (fini) return; fini = true; sortir(rac, suite); }
       timers.push(setTimeout(terminer, (reduit ? 1.2 : duree) * 1000));
     });
   }

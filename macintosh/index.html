@@ -254,24 +254,73 @@ html,body{background:
 #amorce{background:radial-gradient(circle at 12% 12%,rgba(38,181,207,.8),rgba(38,181,207,0) 40%),radial-gradient(circle at 90% 85%,rgba(245,154,60,.75),rgba(245,154,60,0) 40%),radial-gradient(circle at 88% 10%,rgba(148,96,208,.7),rgba(148,96,208,0) 38%),linear-gradient(160deg,#2f6fd6,#4d9bea 55%,#a8d4f6)}
 #amorce::after{content:"";position:absolute;left:0;right:0;bottom:0;height:10px;background:var(--arc)}
 
+
+/* ===== SECTION : affinage (moins « jouet » : tons plus profonds, arrondis mesurés, filets fins) ===== */
+html,body{background:
+  radial-gradient(circle at 10% 8%,rgba(38,181,207,.38),rgba(38,181,207,0) 40%),
+  radial-gradient(circle at 92% 10%,rgba(148,96,208,.3),rgba(148,96,208,0) 38%),
+  radial-gradient(circle at 92% 92%,rgba(245,154,60,.3),rgba(245,154,60,0) 40%),
+  linear-gradient(165deg,#173f86 0%,#2a64be 45%,#5e9fe0 100%)}
+#fond-hello{padding-bottom:0;bottom:0}
+#fond-hello svg.hello{width:min(66vw,820px);stroke-width:6.5;transform:translateX(1.2%);filter:drop-shadow(0 3px 10px rgba(5,25,70,.45))}
+#amorce .bj svg.hello{width:min(66vw,520px);stroke-width:6.5}
+#fond-hello::before{opacity:.5;height:100%;
+  background:radial-gradient(circle 74vmin at 50% 93%,transparent 0 80%,rgba(229,86,107,.9) 80% 81.2%,transparent 81.2% 82.4%,rgba(245,154,60,.9) 82.4% 83.6%,transparent 83.6% 84.8%,rgba(247,201,72,.9) 84.8% 86%,transparent 86% 87.2%,rgba(108,192,74,.9) 87.2% 88.4%,transparent 88.4% 89.6%,rgba(59,130,232,.9) 89.6% 90.8%,transparent 90.8% 92%,rgba(148,96,208,.9) 92% 93.2%,transparent 93.2%)}
+#menus{background:rgba(255,255,255,.5);height:26px}
+#menus::after{height:2px}
+.mb>button{border-radius:6px}
+.liste{border-radius:0 0 10px 10px}
+.liste button{border-radius:6px}
+/* pastilles d’icônes : verre dépoli teinté plutôt que bonbons pleins */
+.ico>span:first-child,#dock button>span{border-radius:18px;padding:9px;border:1px solid rgba(255,255,255,.7);
+  box-shadow:inset 0 2px 5px rgba(255,255,255,.7),inset 0 -6px 10px rgba(20,40,90,.12),0 6px 14px rgba(5,25,70,.3)}
+.ico:nth-child(6n+1)>span:first-child,#dock button:nth-child(6n+1)>span{background:linear-gradient(#fff,#f3bcc6)}
+.ico:nth-child(6n+2)>span:first-child,#dock button:nth-child(6n+2)>span{background:linear-gradient(#fff,#f7d6a8)}
+.ico:nth-child(6n+3)>span:first-child,#dock button:nth-child(6n+3)>span{background:linear-gradient(#fff,#f3e19a)}
+.ico:nth-child(6n+4)>span:first-child,#dock button:nth-child(6n+4)>span{background:linear-gradient(#fff,#bfe3a6)}
+.ico:nth-child(6n+5)>span:first-child,#dock button:nth-child(6n+5)>span{background:linear-gradient(#fff,#a9dbe7)}
+.ico:nth-child(6n+6)>span:first-child,#dock button:nth-child(6n+6)>span{background:linear-gradient(#fff,#d2c1ee)}
+#disque>span:first-child{background:linear-gradient(#fff,#a9dbe7)}#corbeille>span:first-child{background:linear-gradient(#fff,#d3d8e2)}
+.ico .lib{font-weight:normal;border-radius:8px;padding:1px 8px}
+.vue-liste .ico>span:first-child{border-radius:6px;padding:2px}
+/* fenêtres : arrondi mesuré, filet fin */
+.fen{border-radius:12px}
+.tb{height:30px;background:linear-gradient(rgba(255,255,255,.9),rgba(238,242,249,.8))}
+.tb::after{height:2px}
+.tb .nom{font-weight:600;font-size:13px}
+.tb .case,.tb::before{top:8px;width:14px;height:14px}
+.tb .case.ferme{left:12px}.tb::before{left:32px}.tb .case.zoom{left:52px}
+.infos{background:rgba(245,247,251,.95)}
+.zone{background:#fff}
+.dlg{border-radius:16px}.dlg::before{height:4px;border-radius:16px 16px 0 0}
+.bt{border-radius:16px;min-height:28px;padding:3px 18px}
+.vig .im{border-radius:10px;box-shadow:0 4px 12px rgba(5,25,70,.28)}
+.vig.sel .im{outline:3px solid #3b82e8}
+.vig.sel .lib,.vig .lib{border-radius:8px}
+.fiche img{border-radius:10px}
+.puce,.puce:nth-child(n){background:linear-gradient(#fff,#eef3fb);border:1px solid #b9c8e4;color:#2a3550}
+.score{border-radius:10px;height:20px}
+#dock{border-radius:22px;padding:8px 16px;gap:10px;background:rgba(255,255,255,.4)}
+#dock::after{height:2px;bottom:2px}
+#amorce::after{height:4px}
 </style>
 </head>
 <body>
 <div id="menus" role="menubar"></div>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="hello-trait" viewBox="40 0 760 285">
-<!-- « hello » dessiné à la main pour ce projet (trait continu, boucles) : tracé original, aucune lettre empruntée à une police ni à une marque -->
-<path d="M95 40C85 110 75 190 70 250C95 170 140 140 175 160C205 178 175 230 185 250"/>
-<path d="M185 250C215 235 235 200 250 185C270 165 280 160 255 158C215 156 205 225 235 245C265 262 300 225 315 205"/>
-<path d="M315 205C345 160 380 90 385 50C387 25 365 45 365 110C365 190 380 250 405 250"/>
-<path d="M405 250C440 235 470 170 495 100C500 70 485 40 470 60C455 90 460 190 485 245C500 262 530 245 545 215"/>
-<path d="M545 215C560 175 600 160 625 180C650 205 625 250 595 245C565 240 575 190 625 180C675 170 720 185 760 200"/>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="hello-trait" viewBox="-30 -246 700 276">
+<!-- « hello » cursif dessiné à la main pour ce projet : tracé original ; les deux « l » partagent le même tracé -->
+<path transform="translate(0 0)" d="M0 0C26 -10 72 -85 84 -172C90 -218 62 -228 52 -196C38 -150 34 -60 46 -6C50 -46 70 -110 104 -114C134 -116 132 -64 126 -32C124 -8 142 4 172 0"/>
+<path transform="translate(172 0)" d="M0 0C20 -24 44 -52 64 -64C86 -76 82 -100 58 -98C28 -94 14 -50 28 -22C40 2 70 6 96 0"/>
+<path transform="translate(268 0)" d="M0 0C26 -10 72 -85 84 -172C90 -218 62 -228 52 -196C38 -150 34 -60 50 -14C56 4 78 6 96 0"/>
+<path transform="translate(364 0)" d="M0 0C26 -10 72 -85 84 -172C90 -218 62 -228 52 -196C38 -150 34 -60 50 -14C56 4 78 6 96 0"/>
+<path transform="translate(460 0)" d="M0 0C10 -22 22 -52 36 -76C64 -90 94 -68 90 -34C86 -4 44 4 28 -22C14 -46 30 -74 58 -78C90 -82 124 -70 160 -94"/>
 </symbol></defs></svg>
-<div id="fond-hello" aria-hidden="true"><svg class="hello" viewBox="40 0 760 285"><use href="#hello-trait"/></svg></div>
+<div id="fond-hello" aria-hidden="true"><svg class="hello" viewBox="-30 -246 700 276"><use href="#hello-trait" x="-30" y="-246" width="700" height="276"/></svg></div>
 <div id="bureau" aria-label="Bureau"></div>
 
 <div id="amorce" role="status" tabindex="0">
   <div id="logo-amorce"></div>
-  <div class="bj" role="img" aria-label="hello"><svg class="hello" viewBox="40 0 760 285"><use href="#hello-trait"/></svg></div>
+  <div class="bj" role="img" aria-label="hello"><svg class="hello" viewBox="-30 -246 700 276"><use href="#hello-trait" x="-30" y="-246" width="700" height="276"/></svg></div>
   <div>Bienvenue dans le Casier</div>
   <small>(clique ou appuie sur Entrée pour continuer)</small>
 </div>

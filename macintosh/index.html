@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:;">
 <title>Casier Macintosh — Casier Pédagogique Numérique</title>
 <!--
-  Projet : Casier V3 « Macintosh années 2000 »  ·  Version : 2.0.0  ·  Date : 21/11/2026
+  Projet : Casier V3 « Macintosh années 2000 »  ·  Version : 2.1.0  ·  Date : 21/11/2026
   Auteur : Tom Rougeaud  ·  Licence : CC BY-NC 4.0
   Réalisé avec l’aide de l’IA : Claude Sonnet 5.5 (Anthropic)
   Habillage rétro « années 2000 » (fenêtres arrondies, boutons ronds, dock, fond « hello ») du Casier Pédagogique Numérique.
@@ -182,6 +182,78 @@ html,body{font-family:var(--police);font-size:12px;
 svg.hello{display:block;overflow:visible;width:min(72vw,880px);height:auto;fill:none;stroke:#fff;stroke-width:11;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 8px 18px rgba(8,45,105,.5))}
 #amorce .bj svg.hello{width:min(70vw,520px);margin:0 auto}
 @media (max-width:600px){#dock{gap:4px;padding:5px 8px}#dock button>span{padding:3px}}
+/* ===== SECTION : habillage candy (couleurs bonbon façon iMac, arrondis façon macOS récent) ===== */
+:root{--rouge:#e5566b;--orange:#f59a3c;--jaune:#f7c948;--vert:#6cc04a;--bleu:#3b82e8;--violet:#9460d0;--turquoise:#26b5cf;
+  --arc:linear-gradient(90deg,#e5566b,#f59a3c,#f7c948,#6cc04a,#26b5cf,#3b82e8,#9460d0)}
+html,body{background:
+  radial-gradient(circle at 8% 10%,rgba(38,181,207,.75),rgba(38,181,207,0) 38%),
+  radial-gradient(circle at 92% 8%,rgba(148,96,208,.65),rgba(148,96,208,0) 36%),
+  radial-gradient(circle at 6% 92%,rgba(108,192,74,.6),rgba(108,192,74,0) 36%),
+  radial-gradient(circle at 94% 90%,rgba(245,154,60,.7),rgba(245,154,60,0) 38%),
+  linear-gradient(160deg,#2f6fd6 0%,#4d9bea 50%,#a8d4f6 100%)}
+/* grand arc-en-ciel derrière le « hello » */
+#fond-hello::before{content:"";position:absolute;left:0;right:0;bottom:0;height:78%;pointer-events:none;opacity:.8;
+  background:radial-gradient(circle 62vmin at 50% 112%,transparent 0 60%,#e5566b 60% 67%,#f59a3c 67% 74%,#f7c948 74% 81%,#6cc04a 81% 88%,#3b82e8 88% 95%,#9460d0 95% 102%,transparent 102%)}
+#fond-hello svg.hello{position:relative}
+/* barre de menus translucide avec filet arc-en-ciel */
+#menus{background:rgba(255,255,255,.62);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:0;height:26px}
+#menus::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--arc)}
+#bureau{top:26px}.mb>button{border-radius:8px;margin:0 1px}
+.mb>button.pomme svg{width:24px;height:24px}
+.mb>button.ouvert{background:linear-gradient(#78a9f5,#3b82e8)}
+.liste{border-radius:0 0 14px 14px;border:0;background:rgba(255,255,255,.88);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 12px 30px rgba(0,0,0,.35);padding:5px}
+.liste button{border-radius:8px}
+.liste button:hover{background:linear-gradient(#78a9f5,#3b82e8)}
+/* icônes : grosses pastilles bonbon, une couleur différente à chaque rang */
+.ico>span:first-child{padding:10px;border-radius:24px;border:1px solid rgba(255,255,255,.85);
+  box-shadow:inset 0 3px 8px rgba(255,255,255,.85),inset 0 -8px 14px rgba(0,0,0,.14),0 8px 18px rgba(0,0,0,.3);
+  background:linear-gradient(#ffffff,#cfe3fb)}
+.ico:nth-child(6n+1)>span:first-child,#dock button:nth-child(6n+1)>span{background:linear-gradient(#ffd9de,#f07f92)}
+.ico:nth-child(6n+2)>span:first-child,#dock button:nth-child(6n+2)>span{background:linear-gradient(#ffe6c2,#f7a64a)}
+.ico:nth-child(6n+3)>span:first-child,#dock button:nth-child(6n+3)>span{background:linear-gradient(#fff3b8,#f3c53a)}
+.ico:nth-child(6n+4)>span:first-child,#dock button:nth-child(6n+4)>span{background:linear-gradient(#d8f5bd,#7acb55)}
+.ico:nth-child(6n+5)>span:first-child,#dock button:nth-child(6n+5)>span{background:linear-gradient(#c6ecf5,#3cbad3)}
+.ico:nth-child(6n+6)>span:first-child,#dock button:nth-child(6n+6)>span{background:linear-gradient(#e2d2f7,#a173d8)}
+#disque>span:first-child{background:linear-gradient(#c6ecf5,#3cbad3)}#corbeille>span:first-child{background:linear-gradient(#ececec,#b4b9c4)}
+.ico .lib{font-weight:bold;border-radius:12px;padding:1px 10px}
+.ico.sel>span:first-child{outline:3px solid #fff}
+.ico.sel .lib{background:linear-gradient(#78a9f5,#3b82e8)}
+.vue-liste .ico>span:first-child{padding:2px;border-radius:7px;box-shadow:none;border:0;background:none!important}
+/* fenêtres très arrondies, filet arc-en-ciel sous la barre de titre */
+.fen{border:0;border-radius:18px;box-shadow:0 18px 44px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.55) inset}
+.tb{height:34px;border-bottom:0;background:linear-gradient(rgba(255,255,255,.85),rgba(255,255,255,.55))}
+.tb::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--arc)}
+.tb .nom{font-size:14px;font-weight:bold;color:#2a3550}
+.tb .case{top:10px;width:15px;height:15px}
+.tb .case.ferme{left:14px;background:radial-gradient(circle at 50% 28%,#ff9aa8,#e5566b)}
+.tb::before{left:36px;top:10px;width:15px;height:15px;background:radial-gradient(circle at 50% 28%,#ffe48c,#f2b72c)}
+.tb .case.zoom{left:58px;background:radial-gradient(circle at 50% 28%,#b7ee9f,#4cb83a)}
+.infos{background:rgba(244,247,252,.9);border-bottom:1px solid #d3dbea}
+.zone{background:linear-gradient(#ffffff,#f3f7fd)}
+.recherche input{border-radius:16px;border-color:#9db8e6}
+.poignee::after{border-color:#9aa8c4}
+/* boîtes de dialogue et boutons très ronds */
+.dlg{border:0;border-radius:24px;background:linear-gradient(#ffffff,#eaf1fb);box-shadow:0 22px 56px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.7) inset}
+.dlg::before{content:"";display:block;height:6px;background:var(--arc);border-radius:24px 24px 0 0}
+.bt{border-radius:20px;padding:4px 22px;min-height:32px;border:1px solid #8aa9dd}
+.bt.defaut{background:linear-gradient(#8bb9f8 0,#3b82e8 52%,#5e9bf0 100%);box-shadow:0 2px 6px rgba(0,0,0,.35),0 0 0 3px rgba(59,130,232,.3)}
+.vig .im{border:0;border-radius:16px;box-shadow:0 6px 16px rgba(0,0,0,.3)}
+.vig.sel .im{outline:4px solid #3b82e8}
+.vig.sel .lib,.vig .lib{border-radius:12px}
+.fiche img{border-radius:14px;border:0;box-shadow:0 6px 16px rgba(0,0,0,.28)}
+.puce{background:linear-gradient(#fff,#e7f0fd);border:1px solid #9db8e6;color:#2a3550}
+.puce:nth-child(5n+1){background:linear-gradient(#fff,#ffd9de)}.puce:nth-child(5n+2){background:linear-gradient(#fff,#ffe6c2)}
+.puce:nth-child(5n+3){background:linear-gradient(#fff,#d8f5bd)}.puce:nth-child(5n+4){background:linear-gradient(#fff,#c6ecf5)}.puce:nth-child(5n+5){background:linear-gradient(#fff,#e2d2f7)}
+.score{border-radius:12px;height:22px}
+/* dock : grande capsule colorée et translucide (sous les fenêtres pour ne jamais cacher leurs boutons) */
+.fiche{display:flex;flex-direction:column;flex:1;min-height:0}.fiche .scroll{flex:1;max-height:none;min-height:0}
+#dock{z-index:5;border-radius:30px;padding:9px 18px;gap:12px;background:rgba(255,255,255,.42);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.85);box-shadow:0 12px 30px rgba(0,0,0,.35)}
+#dock::after{content:"";position:absolute;left:22px;right:22px;bottom:2px;height:3px;border-radius:2px;background:var(--arc)}
+#dock button>span{padding:6px;border-radius:16px;border:1px solid rgba(255,255,255,.9);box-shadow:inset 0 2px 5px rgba(255,255,255,.85),inset 0 -5px 9px rgba(0,0,0,.14),0 4px 9px rgba(0,0,0,.3)}
+/* démarrage et arrêt */
+#amorce{background:radial-gradient(circle at 12% 12%,rgba(38,181,207,.8),rgba(38,181,207,0) 40%),radial-gradient(circle at 90% 85%,rgba(245,154,60,.75),rgba(245,154,60,0) 40%),radial-gradient(circle at 88% 10%,rgba(148,96,208,.7),rgba(148,96,208,0) 38%),linear-gradient(160deg,#2f6fd6,#4d9bea 55%,#a8d4f6)}
+#amorce::after{content:"";position:absolute;left:0;right:0;bottom:0;height:10px;background:var(--arc)}
+
 </style>
 </head>
 <body>
@@ -483,7 +555,7 @@ document.addEventListener("pointerdown", function (e) {
 /* ===== SECTION : Fiche d’une ressource (« Lire les informations ») ===== */
 function ouvrirFiche(it) {
   ouvrirFenetre({
-    id: "fiche-" + it.u, titre: propre(it.t), dlg: true, centre: true, l: 600, redim: false,
+    id: "fiche-" + it.u, titre: propre(it.t), dlg: true, centre: true, l: 600, h: Math.max(320, Math.min(660, window.innerHeight - 90)), redim: false,
     contenu: function (corps, f) {
       var cadre = el("div", "fiche"), defile = el("div", "scroll");
       var tete = el("div", "entete"); tete.appendChild(iconeEl(iconeDe(it), 36)); tete.appendChild(el("span", "", propre(it.t)));
@@ -502,7 +574,7 @@ function ouvrirFiche(it) {
       bas.appendChild(bouton("bt", "Fermer", function () { fermer(f); }));
       var ouvrir = bouton("bt defaut", "Ouvrir", function () { ouvrirLien(adresse(it)); });
       bas.appendChild(ouvrir); corps.appendChild(bas);
-      setTimeout(function () { ouvrir.focus(); }, 0);
+      setTimeout(function () { ouvrir.focus({ preventScroll: true }); }, 0);
     }
   });
 }
@@ -712,7 +784,7 @@ function ouvrirAPropos() {
         boite("Effacer le score du Duel sur cet ordinateur ?", "question", [{ t: "Effacer", f: function () { effacer(CLE_DUEL); } }, { t: "Annuler" }]);
       }));
       var ok = bouton("bt defaut", "OK", function () { fermer(f); }); bas.appendChild(ok);
-      corps.appendChild(bas); setTimeout(function () { ok.focus(); }, 0);
+      corps.appendChild(bas); setTimeout(function () { ok.focus({ preventScroll: true }); }, 0);
     }
   });
 }
@@ -765,7 +837,7 @@ poubelle.id = "corbeille"; poubelle.classList.add("fixe");
 var dock = el("div"); dock.id = "dock"; dock.setAttribute("role", "toolbar"); dock.setAttribute("aria-label", "Dock");
 [["casier", "Casier", function () { ouvrirDossier(null); }], ["galerie", "Galerie", ouvrirGalerie], ["loupe", "Rechercher", ouvrirRecherche],
  ["demineur", "Démineur", ouvrirDemineur], ["musique", "Lecteur audio", ouvrirLecteur], ["duel", "Duel", ouvrirDuel]].forEach(function (d) {
-  var b = bouton("", ""); b.title = d[1]; b.setAttribute("aria-label", d[1]); b.appendChild(iconeEl(d[0], 40)); b.addEventListener("click", d[2]); dock.appendChild(b);
+  var b = bouton("", ""); b.title = d[1]; b.setAttribute("aria-label", d[1]); b.appendChild(iconeEl(d[0], 46)); b.addEventListener("click", d[2]); dock.appendChild(b);
 });
 document.body.appendChild(dock);
 

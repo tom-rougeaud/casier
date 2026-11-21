@@ -1,20 +1,50 @@
-<!-- Fond d’écran original « Crépuscule sur le lac » · Auteur : Tom Rougeaud · Réalisé avec l’aide de l’IA : Claude Sonnet 5.5 (Anthropic) · CC BY-NC 4.0 -->
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Fond d’écran « Colline en plein ciel » — dessin original en SVG pur (aucune photo, aucune image existante).
+  Auteur : Tom Rougeaud · Réalisé avec l’aide de l’IA : Claude Sonnet 5.5 (Anthropic) · Licence : CC BY-NC 4.0
+  Une colline verte, un grand ciel bleu, des nuages doux : composition inventée, volontairement stylisée.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
   <defs>
-    <linearGradient id="ciel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b1d3f"/><stop offset=".45" stop-color="#24427a"/><stop offset=".72" stop-color="#5d78a6"/><stop offset=".86" stop-color="#c79a74"/><stop offset="1" stop-color="#e0b98a"/></linearGradient>
-    <linearGradient id="lac" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4f6d99"/><stop offset=".5" stop-color="#26426f"/><stop offset="1" stop-color="#0f2142"/></linearGradient>
-    <radialGradient id="lune" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#f3efe0" stop-opacity=".95"/><stop offset=".35" stop-color="#e9e3cc" stop-opacity=".35"/><stop offset="1" stop-color="#e9e3cc" stop-opacity="0"/></radialGradient>
+    <linearGradient id="ciel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1d5fc4"/><stop offset=".45" stop-color="#4a93e4"/><stop offset=".78" stop-color="#a8d3f6"/><stop offset="1" stop-color="#d9eefb"/>
+    </linearGradient>
+    <radialGradient id="soleil" cx=".82" cy=".14" r=".5">
+      <stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="nuage" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#fff" stop-opacity=".96"/><stop offset=".6" stop-color="#fff" stop-opacity=".7"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="colline" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#b4e866"/><stop offset=".35" stop-color="#6fc443"/><stop offset="1" stop-color="#2f8a2b"/>
+    </linearGradient>
+    <linearGradient id="avant" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#58b236"/><stop offset="1" stop-color="#1e6a25"/>
+    </linearGradient>
   </defs>
-  <rect width="1600" height="560" fill="url(#ciel)"/>
-  <g fill="#fff" opacity=".7"><circle cx="140" cy="90" r="1.6"/><circle cx="310" cy="190" r="1.2"/><circle cx="470" cy="70" r="1.8"/><circle cx="640" cy="150" r="1.2"/><circle cx="820" cy="60" r="1.6"/><circle cx="960" cy="210" r="1.2"/><circle cx="1330" cy="90" r="1.6"/><circle cx="1480" cy="200" r="1.2"/><circle cx="90" cy="260" r="1"/><circle cx="1010" cy="110" r="1.4"/><circle cx="1220" cy="290" r="1"/></g>
-  <circle cx="1180" cy="190" r="170" fill="url(#lune)"/><circle cx="1180" cy="190" r="46" fill="#f1ecd8"/>
-  <path d="M0 470 Q160 380 330 430 T620 400 T930 440 T1250 390 T1600 430 L1600 600 L0 600Z" fill="#40507f"/>
-  <path d="M0 520 Q220 450 420 500 T800 480 T1160 510 T1600 470 L1600 620 L0 620Z" fill="#2f3d68"/>
-  <path d="M0 565 Q260 520 520 560 T1040 545 T1600 560 L1600 640 L0 640Z" fill="#1f2c50"/>
-  <rect y="600" width="1600" height="300" fill="url(#lac)"/>
-  <g fill="#f1ecd8" opacity=".35"><ellipse cx="1180" cy="660" rx="40" ry="4"/><ellipse cx="1180" cy="690" rx="62" ry="4"/><ellipse cx="1180" cy="725" rx="86" ry="5"/><ellipse cx="1180" cy="768" rx="112" ry="5"/></g>
-  <g stroke="#9db4d6" stroke-opacity=".22" stroke-width="2"><path d="M80 640h180M420 660h240M820 630h200M1320 650h180M240 700h260M900 720h300M40 770h200M600 790h260M1300 800h240"/></g>
-  <path d="M0 740 Q200 650 460 700 T900 790 L900 900 L0 900Z" fill="#12263a"/>
-  <path d="M1600 720 Q1380 640 1150 700 T700 820 L700 900 L1600 900Z" fill="#16304a"/>
-  <path d="M0 830 Q300 780 620 840 T1200 860 T1600 820 L1600 900 L0 900Z" fill="#0d1d2e"/>
+  <rect width="1920" height="1080" fill="url(#ciel)"/>
+  <rect width="1920" height="1080" fill="url(#soleil)"/>
+  <!-- nuages : ellipses douces superposées -->
+  <g>
+    <ellipse cx="380" cy="190" rx="300" ry="78" fill="url(#nuage)"/>
+    <ellipse cx="250" cy="235" rx="260" ry="70" fill="url(#nuage)"/>
+    <ellipse cx="520" cy="250" rx="280" ry="62" fill="url(#nuage)"/>
+    <ellipse cx="1180" cy="120" rx="240" ry="48" fill="url(#nuage)"/>
+    <ellipse cx="1330" cy="150" rx="210" ry="42" fill="url(#nuage)"/>
+    <ellipse cx="1560" cy="330" rx="330" ry="60" fill="url(#nuage)" opacity=".85"/>
+    <ellipse cx="1420" cy="372" rx="240" ry="48" fill="url(#nuage)" opacity=".85"/>
+    <ellipse cx="760" cy="470" rx="260" ry="36" fill="url(#nuage)" opacity=".7"/>
+    <ellipse cx="1000" cy="520" rx="200" ry="28" fill="url(#nuage)" opacity=".6"/>
+  </g>
+  <!-- crête lointaine, bleutée -->
+  <path d="M0 690C260 650 520 700 820 670C1120 640 1480 600 1920 640L1920 1080L0 1080Z" fill="#8fc2a8" opacity=".55"/>
+  <!-- grande colline -->
+  <path d="M0 770C300 725 700 770 1010 705C1360 632 1700 566 1920 606L1920 1080L0 1080Z" fill="url(#colline)"/>
+  <!-- bandes de lumière douce, comme une herbe tondue -->
+  <g fill="none" stroke="#fff" stroke-linecap="round" opacity=".13">
+    <path d="M60 850C420 790 820 840 1180 760C1500 690 1740 650 1900 676" stroke-width="46"/>
+    <path d="M0 930C380 880 800 925 1220 850C1540 792 1760 770 1920 790" stroke-width="38"/>
+  </g>
+  <!-- colline d’avant-plan -->
+  <path d="M0 910C380 838 880 888 1300 946C1600 988 1790 968 1920 944L1920 1080L0 1080Z" fill="url(#avant)"/>
 </svg>

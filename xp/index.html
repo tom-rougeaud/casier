@@ -38,7 +38,7 @@ a{color:#000080}
 /* ===== SECTION : Bureau et icônes ===== */
 #bureau{position:absolute;left:0;top:0;right:0;bottom:30px;padding:8px;display:flex;flex-direction:column;
   flex-wrap:wrap;align-content:flex-start;gap:8px;overflow:hidden}
-.ico{width:108px;min-height:72px;padding:3px;background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;line-height:1.2}
+.ico{width:130px;min-height:98px;padding:3px;background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;line-height:1.2}
 .ico .lib{padding:1px 3px;word-break:break-word}
 .ico.sel .lib{background:var(--marine);color:#fff;outline:1px dotted #ff0}
 #bureau>.ico{color:#fff;text-shadow:1px 1px #000}
@@ -145,7 +145,7 @@ table.det td svg{vertical-align:middle;margin-right:5px}
 
 /* ===== SECTION : Thème XP (bleu, beige et vert) ===== */
 :root{--bleuxp:#0a56e0;--beige:#ece9d8;--bord:#003c74}
-html,body{background:#14274a url(fond.svg) center/cover no-repeat}
+html,body{background:#4a93e4 url(fond.svg) center/cover no-repeat}
 .relief{background:var(--beige);box-shadow:none}
 .creux{background:#fff;box-shadow:none;border:1px solid #7f9db9}
 .appuye{background:#d6d0c0;box-shadow:inset 1px 1px 3px rgba(0,0,0,.35)}
@@ -231,6 +231,7 @@ table.det tr.sel td{background:#316ac5}
 </div>
 
 <script src="../data-casier.js"></script>
+<script src="../logiciels.js"></script>
 <script>
 (function () {
 "use strict";
@@ -399,6 +400,12 @@ function brancherRedim(f, p) {
   });
 }
 /* Ouvre une fenêtre. Options : id (instance unique), titre, icone, l, h, redim, boite, centre, contenu(corps, f). */
+/* Abscisse de départ des fenêtres : à droite des colonnes d’icônes du bureau (leur nombre dépend de la hauteur de l’écran). */
+function abscisseBase() {
+  var par = Math.max(1, Math.floor((window.innerHeight - HAUTEUR_BARRE - 16) / 106));
+  var nb = bureau.querySelectorAll(":scope > .ico").length;
+  return Math.ceil(nb / par) * 138 + 12;
+}
 function ouvrirFenetre(o) {
   if (o.id) {
     for (var i = 0; i < fenetres.length; i++) if (fenetres[i].id === o.id) { restaurer(fenetres[i]); return fenetres[i]; }
@@ -406,7 +413,7 @@ function ouvrirFenetre(o) {
   var f = { id: o.id || null, max: false, min: false, opt: o };
   var L = Math.min(o.l || 420, window.innerWidth - 8), H = Math.min(o.h || 320, window.innerHeight - HAUTEUR_BARRE - 8);
   var n = fenetres.length % 7;
-  var x = o.centre ? (window.innerWidth - L) / 2 : Math.max(0, Math.min(110 + n * 28, window.innerWidth - L - 4)); /* 110 px : on laisse les icônes du bureau visibles */
+  var x = o.centre ? (window.innerWidth - L) / 2 : Math.max(0, Math.min(abscisseBase() + n * 28, window.innerWidth - L - 4)); /* on laisse les icônes du bureau visibles */
   var y = o.centre ? (window.innerHeight - HAUTEUR_BARRE - H) / 2 : Math.max(0, Math.min(30 + n * 28, window.innerHeight - HAUTEUR_BARRE - H - 4));
   f.el = el("div", "fenetre relief");
   f.el.setAttribute("role", "group"); f.el.setAttribute("aria-label", o.titre);
@@ -488,11 +495,24 @@ function descriptionLongue(parent, it) {
   });
 }
 
+/* ===== SECTION : Petits logiciels d’époque (logiciels.js) ===== */
+if (window.LOGICIELS) { ICONES.demineur = LOGICIELS.icones.demineur; ICONES.musique = LOGICIELS.icones.musique; }
+/* Démineur : jeu de réflexion classique, dessiné dans logiciels.js. */
+function ouvrirDemineur() {
+  if (!window.LOGICIELS) { boite("Le fichier logiciels.js est introuvable : vérifie qu’il est à côté des dossiers 98, xp et macintosh.", "alerte"); return; }
+  ouvrirFenetre({ id: "demineur", titre: "Démineur", icone: "demineur", l: 320, h: 430, contenu: function (corps) { LOGICIELS.demineur(corps, "win"); } });
+}
+/* Lecteur audio : mélodies originales fabriquées par Web Audio (aucun fichier musical). */
+function ouvrirLecteur() {
+  if (!window.LOGICIELS) { boite("Le fichier logiciels.js est introuvable : vérifie qu’il est à côté des dossiers 98, xp et macintosh.", "alerte"); return; }
+  ouvrirFenetre({ id: "lecteur", titre: "Lecteur audio", icone: "musique", l: 360, h: 470, contenu: function (corps) { LOGICIELS.lecteur(corps, "win"); } });
+}
+
 /* ===== SECTION : Icônes cliquables ===== */
 /* Crée une icône : un clic sélectionne, double-clic ou Entrée ouvre. */
 function creerIcone(parent, nom, libelle, action) {
   var b = bouton("ico", "");
-  b.appendChild(iconeEl(nom, 48)); b.appendChild(el("span", "lib", libelle));
+  b.appendChild(iconeEl(nom, 64)); b.appendChild(el("span", "lib", libelle));
   b.addEventListener("click", function () {
     var s = parent.querySelectorAll(".ico.sel"); for (var i = 0; i < s.length; i++) s[i].classList.remove("sel");
     b.classList.add("sel");
@@ -809,7 +829,7 @@ function ouvrirAPropos() {
         "Auteur : Tom Rougeaud. Réalisé avec l’aide de l’IA : " + NOM_MODELE + ". Licence : CC BY-NC 4.0.",
         "Photo des fiches publiées au " + dateFr(DONNEES.date) + " (" + RESSOURCES.length + " ressources). La liste est lue dans le fichier data-casier.js : elle ne se met pas à jour toute seule.",
         "Les aperçus sont des compositions faites à partir de captures des applis (dossier apercus/) ; les fiches sans aperçu ont une icône.",
-        "Fond d’écran « Crépuscule sur le lac » : dessin original (fichier fond.svg). Tu peux le remplacer par une image de ton ordinateur : Démarrer → Affichage.",
+        "Fond d’écran « Colline en plein ciel » : dessin original (fichier fond.svg). Tu peux le remplacer par une image de ton ordinateur : Démarrer → Affichage.",
         "Hommage nostalgique aux interfaces du début des années 2000 : l’ambiance est reprise, mais pas le drapeau, les sons ni la célèbre image de fond. Dessins et textes originaux, sans lien avec un éditeur de logiciels.",
         "Confidentialité : aucune donnée ne quitte ton ordinateur et aucun traceur n’est utilisé. Seul le score du Duel est gardé dans ce navigateur ; l’image de fond que tu choisis n’est pas enregistrée. Ouvrir une ressource lance simplement le site de la ressource dans un nouvel onglet."
       ].forEach(function (t) { z.appendChild(el("p", "", t)); });
@@ -846,6 +866,8 @@ function construireDemarrer() {
   entree(fly, "casier", "Mon Casier", function () { ouvrirDossier(null); });
   entree(fly, "galerie", "Galerie", ouvrirGalerie);
   entree(fly, "loupe", "Rechercher…", ouvrirRecherche);
+  entree(fly, "demineur", "Démineur", ouvrirDemineur);
+  entree(fly, "musique", "Lecteur audio", ouvrirLecteur);
   sous.appendChild(tous); sous.appendChild(fly); g.appendChild(sous);
   entree(d, "casier", "Mon Casier", function () { ouvrirDossier(null); });
   entree(d, "galerie", "Galerie", ouvrirGalerie);
@@ -878,7 +900,7 @@ function ouvrirAffichage() {
       var cadre = el("div", "panneau"); cadre.style.margin = "8px";
       cadre.appendChild(el("p", "", "Choisis une image de ton ordinateur pour le fond d’écran. Elle reste dans ton navigateur : elle n’est ni envoyée ni publiée, et elle disparaît quand tu fermes la page."));
       var apercu = el("div", "creux"); apercu.style.cssText = "height:150px;background:#14274a center/cover no-repeat";
-      var nom = el("p", "", "Fond actuel : Crépuscule sur le lac (original)");
+      var nom = el("p", "", "Fond actuel : Colline en plein ciel (original)");
       var champ = el("input"); champ.type = "file"; champ.accept = "image/*"; champ.hidden = true;
       /* Montre le fond courant dans l’aperçu. */
       function montrer() { apercu.style.backgroundImage = fondPerso ? 'url("' + fondPerso + '")' : 'url("fond.svg")'; }
@@ -893,7 +915,7 @@ function ouvrirAffichage() {
       var bas = el("div", "boutons");
       bas.appendChild(bouton("relief btn", "Choisir une image…", function () { champ.click(); }));
       bas.appendChild(bouton("relief btn", "Fond d’origine", function () {
-        if (fondPerso) URL.revokeObjectURL(fondPerso); fondPerso = null; appliquerFond(null); montrer(); nom.textContent = "Fond actuel : Crépuscule sur le lac (original)";
+        if (fondPerso) URL.revokeObjectURL(fondPerso); fondPerso = null; appliquerFond(null); montrer(); nom.textContent = "Fond actuel : Colline en plein ciel (original)";
       }));
       bas.appendChild(bouton("relief btn", "Fermer", function () { fermer(f); }));
       cadre.appendChild(apercu); cadre.appendChild(nom); cadre.appendChild(champ); corps.appendChild(cadre); corps.appendChild(bas); montrer();
@@ -967,6 +989,8 @@ creerIcone(bureau, "galerie", "Galerie", ouvrirGalerie);
 creerIcone(bureau, "loupe", "Rechercher", ouvrirRecherche);
 creerIcone(bureau, "reglages", "Affichage", ouvrirAffichage);
 creerIcone(bureau, "duel", "Duel", ouvrirDuel);
+creerIcone(bureau, "demineur", "Démineur", ouvrirDemineur);
+creerIcone(bureau, "musique", "Lecteur audio", ouvrirLecteur);
 creerIcone(bureau, "aide", "À propos", ouvrirAPropos);
 if (!RESSOURCES.length) boite("Casier XP", "La liste des ressources n’a pas pu être lue. Vérifie que le fichier data-casier.js est bien à côté du dossier xp.", "alerte");
 majHorloge(); setInterval(majHorloge, 15000);

@@ -7,11 +7,12 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:;">
 <title>Casier Macintosh — Casier Pédagogique Numérique</title>
 <!--
-  Projet : Casier V3 « Macintosh »  ·  Version : 1.1.0  ·  Date : 20/11/2026
+  Projet : Casier V3 « Macintosh années 2000 »  ·  Version : 2.0.0  ·  Date : 21/11/2026
   Auteur : Tom Rougeaud  ·  Licence : CC BY-NC 4.0
   Réalisé avec l’aide de l’IA : Claude Sonnet 5.5 (Anthropic)
-  Habillage rétro (fenêtres rayées, barre de menus, « hello » cursif) du Casier Pédagogique Numérique.
-  Dessins et textes originaux : la pomme est un simple fruit entier (aucun logo de marque), le « hello » utilise une police cursive du système.
+  Habillage rétro « années 2000 » (fenêtres arrondies, boutons ronds, dock, fond « hello ») du Casier Pédagogique Numérique.
+  L’ancien habillage (fenêtres rayées) reste disponible dans le dossier classique/.
+  Dessins et textes originaux : le fruit multicolore est une poire dessinée ici (aucun logo de marque) ; le « hello » utilise une police cursive du système.
 -->
 <style>
 /* ===== SECTION : Variables et base ===== */
@@ -31,7 +32,6 @@ button{font:inherit;color:inherit;cursor:default}
 .mb>button{background:none;border:0;padding:3px 10px;min-height:22px;font-weight:bold}
 .mb>button.ouvert{background:#000;color:#fff}
 .mb>button.pomme{padding:2px 10px}
-.mb>button.pomme.ouvert svg path{fill:#fff}
 .liste{position:absolute;left:0;top:100%;min-width:200px;background:#fff;border:2px solid #000;box-shadow:2px 2px 0 #000;padding:1px 0}
 .liste button{display:block;width:100%;text-align:left;background:none;border:0;padding:4px 16px}
 .liste button:hover{background:#000;color:#fff}
@@ -40,7 +40,7 @@ button{font:inherit;color:inherit;cursor:default}
 
 /* ===== SECTION : Bureau et icônes ===== */
 #bureau{position:absolute;left:0;right:0;top:24px;bottom:0;overflow:hidden}
-.ico{width:116px;padding:4px;background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;line-height:1.2;min-height:74px}
+.ico{width:132px;padding:4px;background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;line-height:1.2;min-height:100px}
 .ico .lib{padding:1px 4px;background:#fff;border:1px solid transparent;word-break:break-word}
 .ico.sel svg{filter:invert(1)}
 .ico.sel .lib{background:#000;color:#fff}
@@ -117,15 +117,89 @@ button{font:inherit;color:inherit;cursor:default}
 .desc h4{margin:10px 0 4px;font-size:12px}.desc h4:first-child{margin-top:0}
 .desc ul{margin:0 0 8px;padding-left:18px}.desc li{line-height:1.4;user-select:text;-webkit-user-select:text}
 .vue-liste .ico svg{width:20px;height:20px}
+
+/* ===== SECTION : Habillage « années 2000 » (remplace le style rayé) ===== */
+:root{--police:"Lucida Grande","Lucida Sans Unicode",Geneva,Verdana,sans-serif;--bleu1:#6aa7f0;--bleu2:#2f6fd4}
+html,body{font-family:var(--police);font-size:12px;
+  background:radial-gradient(ellipse at 18% 12%,rgba(255,255,255,.6),rgba(255,255,255,0) 42%),radial-gradient(circle at 82% 78%,rgba(150,205,255,.55),rgba(255,255,255,0) 38%),radial-gradient(circle at 60% 30%,rgba(255,255,255,.18),rgba(255,255,255,0) 20%),linear-gradient(160deg,#1c5aa8 0%,#3b8cd6 48%,#9bcbf2 100%)}
+#fond-hello{position:fixed;left:0;right:0;top:24px;bottom:0;display:flex;align-items:center;justify-content:center;pointer-events:none;
+  font:italic 400 clamp(110px,24vw,300px)/1 var(--cursive);color:rgba(255,255,255,.93);text-shadow:0 8px 28px rgba(8,45,105,.5);padding-bottom:6vh}
+#menus{height:24px;background:linear-gradient(#fcfcfc,#dedede);border-bottom:1px solid #8c8c8c;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.mb>button{font-weight:normal;border-radius:4px}
+.mb>button.ouvert{background:linear-gradient(var(--bleu1),var(--bleu2));color:#fff}
+.liste{border:1px solid #8c8c8c;border-radius:0 0 7px 7px;background:rgba(255,255,255,.97);box-shadow:0 8px 20px rgba(0,0,0,.4);padding:3px 0}
+.liste button:hover{background:linear-gradient(var(--bleu1),var(--bleu2));color:#fff}
+.liste hr{border-top:1px solid #cfcfcf}
+#horloge{font-weight:normal}
+/* icônes : pastilles brillantes */
+.ico>span:first-child{padding:9px;border-radius:15px;background:linear-gradient(#fff,#d4e1f3);border:1px solid rgba(50,85,140,.6);box-shadow:0 4px 10px rgba(0,0,0,.35),inset 0 1px 0 #fff}
+.ico .lib{background:none;border:0;color:#fff;text-shadow:0 1px 3px #082a5a;border-radius:10px;padding:1px 9px}
+.ico.sel svg{filter:none}
+.ico.sel .lib{background:linear-gradient(var(--bleu1),var(--bleu2));color:#fff}
+.ico.sel>span:first-child{outline:3px solid rgba(59,127,224,.85)}
+.zone .ico .lib{color:#111;text-shadow:none}.zone .ico.sel .lib{color:#fff}
+.vue-liste .ico>span:first-child{padding:2px;border-radius:5px;box-shadow:none;border:0;background:none}
+.vue-liste .ico.sel{background:linear-gradient(var(--bleu1),var(--bleu2));color:#fff;border-radius:6px}
+.vue-liste .ico .lib{color:inherit;text-shadow:none}
+/* fenêtres */
+.fen{border:1px solid #585858;border-radius:8px 8px 4px 4px;overflow:hidden;box-shadow:0 12px 30px rgba(0,0,0,.5)}
+.fen:not(.actif){box-shadow:0 4px 12px rgba(0,0,0,.3)}
+.tb{height:26px;border-bottom:1px solid #8a8a8a;background:linear-gradient(rgba(255,255,255,.55),rgba(0,0,0,.07)),repeating-linear-gradient(#e9e9e9 0 2px,#f8f8f8 2px 4px)}
+.tb .stries{display:none!important}
+.tb .nom{background:none;font-weight:normal;font-size:13px;color:#222;text-shadow:0 1px rgba(255,255,255,.85)}
+.tb .case{display:block;top:6px;width:14px;height:14px;padding:0;border-radius:50%;border:1px solid rgba(0,0,0,.4);box-shadow:inset 0 -3px 4px rgba(0,0,0,.18),inset 0 2px 3px rgba(255,255,255,.85)}
+.tb .case.ferme{left:9px;background:radial-gradient(circle at 50% 28%,#ffa497,#e0463a)}
+.tb .case.zoom{left:49px;right:auto;background:radial-gradient(circle at 50% 28%,#b0eb98,#3aa931)}
+.tb::before{content:"";position:absolute;left:29px;top:6px;width:14px;height:14px;border-radius:50%;border:1px solid rgba(0,0,0,.4);background:radial-gradient(circle at 50% 28%,#ffeaa6,#e6b126);box-shadow:inset 0 -3px 4px rgba(0,0,0,.18),inset 0 2px 3px rgba(255,255,255,.85)}
+.fen:not(.actif) .tb .case,.fen:not(.actif) .tb::before{filter:grayscale(1);opacity:.55}
+.dlg .tb{display:none}
+.infos{border-bottom:1px solid #b9b9b9;background:#f4f4f4}
+.recherche{border-bottom:1px solid #b9b9b9}.recherche input{border:1px solid #7f9bc7;border-radius:12px;box-shadow:inset 0 1px 3px rgba(0,0,0,.25);padding:2px 10px}
+.legende{border-bottom:1px solid #b9b9b9}.scene{background:#101820;border-bottom:1px solid #b9b9b9}
+.poignee{background:none;border:0}.poignee::after{left:auto;top:auto;right:3px;bottom:3px;width:9px;height:9px;border:0;border-right:2px solid #8a8a8a;border-bottom:2px solid #8a8a8a}
+/* boîtes de dialogue et boutons */
+.dlg{border:1px solid #666;border-radius:11px;background:linear-gradient(#fafafa,#e4e4e4);box-shadow:0 16px 42px rgba(0,0,0,.55)}
+.bt{border:1px solid #5f86c6;border-radius:15px;background:linear-gradient(#fff 0,#e6eefb 48%,#cddff5 52%,#e2edfb);padding:3px 18px;box-shadow:0 1px 2px rgba(0,0,0,.25)}
+.bt:active{background:#a9c4ec;color:#000}
+.bt.defaut{background:linear-gradient(#c3dcfc 0,#72a8ee 48%,#3f85e0 52%,#80b6f6);color:#fff;text-shadow:0 -1px rgba(0,0,0,.3);box-shadow:0 1px 3px rgba(0,0,0,.35),0 0 0 3px rgba(80,140,230,.35)}
+:focus-visible{outline:2px solid #3b7fe0;outline-offset:2px}
+.fiche img{border:1px solid #9aa;border-radius:6px;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.vig .im{border:1px solid #9aa9be;border-radius:7px;box-shadow:0 2px 7px rgba(0,0,0,.3)}
+.vig .lib{background:none;padding:1px 9px;border-radius:10px}
+.vig.sel .im{outline:3px solid rgba(59,127,224,.85)}
+.vig.sel .lib{background:linear-gradient(var(--bleu1),var(--bleu2));color:#fff}
+.score{border:1px solid #7f9bc7;border-radius:9px;overflow:hidden}
+/* dock */
+#dock{position:fixed;left:50%;bottom:8px;transform:translateX(-50%);display:flex;gap:10px;align-items:flex-end;padding:7px 14px;
+  background:linear-gradient(rgba(255,255,255,.6),rgba(185,212,244,.5));border:1px solid rgba(255,255,255,.8);border-radius:16px;box-shadow:0 8px 22px rgba(0,0,0,.4);z-index:90000;max-width:96vw;overflow:visible}
+#dock button{background:none;border:0;padding:0;transition:transform .15s}
+#dock button:hover,#dock button:focus-visible{transform:translateY(-8px) scale(1.18)}
+#dock button>span{padding:5px;border-radius:12px;background:linear-gradient(#fff,#d4e1f3);border:1px solid rgba(50,85,140,.6);box-shadow:0 2px 6px rgba(0,0,0,.35)}
+/* écrans de démarrage et d’arrêt */
+#amorce{background:linear-gradient(160deg,#1c5aa8,#3b8cd6 55%,#9bcbf2);color:#fff}
+#amorce .bj{text-shadow:0 6px 22px rgba(8,45,105,.5)}
+#arret{background:linear-gradient(#1b1b1b,#000)}
+svg.hello{display:block;overflow:visible;width:min(72vw,880px);height:auto;fill:none;stroke:#fff;stroke-width:11;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 8px 18px rgba(8,45,105,.5))}
+#amorce .bj svg.hello{width:min(70vw,520px);margin:0 auto}
+@media (max-width:600px){#dock{gap:4px;padding:5px 8px}#dock button>span{padding:3px}}
 </style>
 </head>
 <body>
 <div id="menus" role="menubar"></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="hello-trait" viewBox="40 0 760 285">
+<!-- « hello » dessiné à la main pour ce projet (trait continu, boucles) : tracé original, aucune lettre empruntée à une police ni à une marque -->
+<path d="M95 40C85 110 75 190 70 250C95 170 140 140 175 160C205 178 175 230 185 250"/>
+<path d="M185 250C215 235 235 200 250 185C270 165 280 160 255 158C215 156 205 225 235 245C265 262 300 225 315 205"/>
+<path d="M315 205C345 160 380 90 385 50C387 25 365 45 365 110C365 190 380 250 405 250"/>
+<path d="M405 250C440 235 470 170 495 100C500 70 485 40 470 60C455 90 460 190 485 245C500 262 530 245 545 215"/>
+<path d="M545 215C560 175 600 160 625 180C650 205 625 250 595 245C565 240 575 190 625 180C675 170 720 185 760 200"/>
+</symbol></defs></svg>
+<div id="fond-hello" aria-hidden="true"><svg class="hello" viewBox="40 0 760 285"><use href="#hello-trait"/></svg></div>
 <div id="bureau" aria-label="Bureau"></div>
 
 <div id="amorce" role="status" tabindex="0">
   <div id="logo-amorce"></div>
-  <div class="bj">hello</div>
+  <div class="bj" role="img" aria-label="hello"><svg class="hello" viewBox="40 0 760 285"><use href="#hello-trait"/></svg></div>
   <div>Bienvenue dans le Casier</div>
   <small>(clique ou appuie sur Entrée pour continuer)</small>
 </div>
@@ -135,6 +209,7 @@ button{font:inherit;color:inherit;cursor:default}
 </div>
 
 <script src="../data-casier.js"></script>
+<script src="../logiciels.js"></script>
 <script>
 (function () {
 "use strict";
@@ -201,7 +276,7 @@ function aller(url) { window.location.href = url; }
 /* ===== SECTION : Icônes (dessins originaux en noir et blanc) ===== */
 var T = 'stroke="#000" stroke-width="1.6" fill="#fff"'; /* trait commun : contour noir, fond blanc */
 var ICONES = {
-  pomme: '<path d="M16 10c-2.5-2.2-8-1.4-8.6 4.6C6.8 21 10 29 13.4 29c1.2 0 1.8-.7 2.6-.7s1.4.7 2.6.7c3.4 0 6.6-8 6-14.4C24 8.6 18.5 7.8 16 10z" fill="#000"/><path d="M16 9c0-3 2-5.4 5-5.6 0 3.2-2 5.4-5 5.6z" fill="#000"/>',
+  pomme: '<defs><clipPath id="poire"><path d="M16 8C13 8 12 11 11.5 13.5C11 16 7 18 7 23C7 27 11 29.5 16 29.5C21 29.5 25 27 25 23C25 18 21 16 20.5 13.5C20 11 19 8 16 8Z"/></clipPath></defs><g clip-path="url(#poire)"><rect x="5" y="7.5" width="22" height="4" fill="#5cb85c"/><rect x="5" y="11.2" width="22" height="4" fill="#f7c331"/><rect x="5" y="14.9" width="22" height="4" fill="#f08a24"/><rect x="5" y="18.6" width="22" height="4" fill="#d9453b"/><rect x="5" y="22.3" width="22" height="4" fill="#8e4a9e"/><rect x="5" y="26.0" width="22" height="4" fill="#2f8fd0"/></g><path d="M16 8C16 5.5 17 4 18.5 3" fill="none" stroke="#6b4a2b" stroke-width="1.6" stroke-linecap="round"/><path d="M17.5 6C19 3.5 22 3.5 24 4.5C22.5 7 19.5 7.5 17.5 6Z" fill="#5cb85c"/>',
   ordi: '<rect x="6" y="3" width="20" height="19" rx="3" ' + T + '/><rect x="9" y="6" width="14" height="11" ' + T + '/><path d="M12 12q4 4 8 0" stroke="#000" stroke-width="1.6" fill="none"/><rect x="9" y="24" width="14" height="4" ' + T + '/><circle cx="13" cy="10.5" r="1" fill="#000"/><circle cx="19" cy="10.5" r="1" fill="#000"/>',
   casier: '<rect x="5" y="3" width="22" height="26" ' + T + '/><rect x="8" y="6" width="16" height="9" ' + T + '/><rect x="8" y="17" width="16" height="9" ' + T + '/><rect x="13" y="9" width="6" height="2" fill="#000"/><rect x="13" y="20" width="6" height="2" fill="#000"/>',
   dossier: '<path d="M3 8h9l3 3h14v16H3z" ' + T + '/><path d="M3 13h26" stroke="#000" stroke-width="1.6"/>',
@@ -352,11 +427,24 @@ function descriptionLongue(parent, it) {
   });
 }
 
+/* ===== SECTION : Petits logiciels d’époque (logiciels.js) ===== */
+if (window.LOGICIELS) { ICONES.demineur = LOGICIELS.icones.demineur; ICONES.musique = LOGICIELS.icones.musique; }
+/* Démineur : jeu de réflexion classique, dessiné dans logiciels.js. */
+function ouvrirDemineur() {
+  if (!window.LOGICIELS) { boite("Le fichier logiciels.js est introuvable : vérifie qu’il est à côté des dossiers 98, xp et macintosh.", "alerte"); return; }
+  ouvrirFenetre({ id: "demineur", titre: "Démineur", icone: "demineur", l: 320, h: 430, contenu: function (corps) { LOGICIELS.demineur(corps, "mac"); } });
+}
+/* Lecteur audio : mélodies originales fabriquées par Web Audio (aucun fichier musical). */
+function ouvrirLecteur() {
+  if (!window.LOGICIELS) { boite("Le fichier logiciels.js est introuvable : vérifie qu’il est à côté des dossiers 98, xp et macintosh.", "alerte"); return; }
+  ouvrirFenetre({ id: "lecteur", titre: "Lecteur audio", icone: "musique", l: 360, h: 470, contenu: function (corps) { LOGICIELS.lecteur(corps, "mac"); } });
+}
+
 /* ===== SECTION : Icônes cliquables ===== */
 /* Un clic sélectionne, un double-clic (ou Entrée) ouvre. */
 function creerIcone(parent, nom, libelle, action, colonne) {
   var b = bouton("ico", "");
-  b.appendChild(iconeEl(nom, 48)); b.appendChild(el("span", "lib", libelle));
+  b.appendChild(iconeEl(nom, 64)); b.appendChild(el("span", "lib", libelle));
   if (colonne) b.appendChild(el("span", "col", colonne));
   b.addEventListener("click", function () {
     var s = parent.querySelectorAll(".ico.sel"); for (var i = 0; i < s.length; i++) s[i].classList.remove("sel");
@@ -612,10 +700,10 @@ function ouvrirAPropos() {
       var haut = el("div", "haut"), txt = el("div");
       haut.appendChild(iconeEl("ordi", 44));
       [
-        "Casier Macintosh — version 1.1.0 (palier 1 + aperçus), V3 du Casier Pédagogique Numérique.",
+        "Casier Macintosh années 2000 — version 2.0.0, V3 du Casier Pédagogique Numérique.",
         "Auteur : Tom Rougeaud. Réalisé avec l’aide de l’IA : " + NOM_MODELE + ". Licence : CC BY-NC 4.0.",
         "Photo des fiches publiées au " + dateFr(DONNEES.date) + " (" + RESSOURCES.length + " ressources), lue dans data-casier.js : elle ne se met pas à jour toute seule. Les aperçus sont des compositions faites à partir de captures des applis (dossier apercus/).",
-        "Hommage nostalgique aux ordinateurs de la fin des années 80 et 90. Dessins et textes originaux : la pomme est un fruit, sans logo de marque, et le « hello » vient d’une police cursive du système.",
+        "Hommage nostalgique aux Macintosh des années 2000 (boutons ronds, dock). Dessins et textes originaux : le fruit multicolore est une poire, sans logo de marque, et le « hello » vient d’une police cursive du système. L’ancien habillage rayé est dans le menu du fruit.",
         "Confidentialité : aucune donnée ne quitte ton ordinateur, aucun traceur. Seul le score du Duel est gardé dans ce navigateur. Ouvrir une ressource lance son site dans un nouvel onglet."
       ].forEach(function (t) { txt.appendChild(el("p", "", t)); });
       haut.appendChild(txt); corps.appendChild(haut);
@@ -634,6 +722,7 @@ ajouterMenu("", [
   { t: "À propos du Casier…", f: ouvrirAPropos },
   { t: "Duel…", f: ouvrirDuel },
   "-",
+  { t: "Macintosh classique (fenêtres rayées)", f: function () { aller("classique/"); } },
   { t: "Casier classique", f: function () { aller("../"); } },
   { t: "Version Windows 98", f: function () { aller("../98/"); } },
   { t: "Version Windows XP", f: function () { aller("../xp/"); } }
@@ -654,6 +743,9 @@ ajouterMenu("Affichage", [
 ajouterMenu("Spécial", [
   { t: "Vider la corbeille…", f: function () { boite("La corbeille est déjà vide.", "info"); } },
   "-",
+  { t: "Démineur", f: ouvrirDemineur },
+  { t: "Lecteur audio", f: ouvrirLecteur },
+  "-",
   { t: "Plein écran (Échap pour quitter)", f: basculerPlein },
   { t: "Éteindre…", f: boiteArret }
 ]);
@@ -668,6 +760,14 @@ var poubelle = creerIcone(bureau, "corbeille", "Corbeille", function () {
   ouvrirFenetre({ id: "corbeille", titre: "Corbeille", l: 340, h: 200, contenu: function (c) { var z = el("div", "zone"); z.appendChild(el("p", "", "La corbeille est vide.")); c.appendChild(z); } });
 });
 poubelle.id = "corbeille"; poubelle.classList.add("fixe");
+
+/* ===== SECTION : Dock (barre d’icônes du bas, façon Mac des années 2000) ===== */
+var dock = el("div"); dock.id = "dock"; dock.setAttribute("role", "toolbar"); dock.setAttribute("aria-label", "Dock");
+[["casier", "Casier", function () { ouvrirDossier(null); }], ["galerie", "Galerie", ouvrirGalerie], ["loupe", "Rechercher", ouvrirRecherche],
+ ["demineur", "Démineur", ouvrirDemineur], ["musique", "Lecteur audio", ouvrirLecteur], ["duel", "Duel", ouvrirDuel]].forEach(function (d) {
+  var b = bouton("", ""); b.title = d[1]; b.setAttribute("aria-label", d[1]); b.appendChild(iconeEl(d[0], 40)); b.addEventListener("click", d[2]); dock.appendChild(b);
+});
+document.body.appendChild(dock);
 
 /* ===== SECTION : Démarrage et arrêt ===== */
 var amorceEl = document.getElementById("amorce"), arretEl = document.getElementById("arret"), minuteur = null;
@@ -708,7 +808,7 @@ window.addEventListener("error", function () {
 });
 
 /* ===== SECTION : Démarrage de l’appli ===== */
-document.getElementById("logo-amorce").innerHTML = svg("ordi", 72);
+document.getElementById("logo-amorce").innerHTML = svg("pomme", 84);
 if (!RESSOURCES.length) boite("La liste des ressources n’a pas pu être lue. Vérifie que le fichier data-casier.js est bien à côté du dossier macintosh.", "alerte");
 majHorloge(); setInterval(majHorloge, 15000);
 amorcer();

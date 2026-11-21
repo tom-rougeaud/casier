@@ -38,7 +38,7 @@ a{color:#000080}
 /* ===== SECTION : Bureau et icônes ===== */
 #bureau{position:absolute;left:0;top:0;right:0;bottom:30px;padding:8px;display:flex;flex-direction:column;
   flex-wrap:wrap;align-content:flex-start;gap:8px;overflow:hidden}
-.ico{width:108px;min-height:72px;padding:3px;background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;line-height:1.2}
+.ico{width:130px;min-height:98px;padding:3px;background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;line-height:1.2}
 .ico .lib{padding:1px 3px;word-break:break-word}
 .ico.sel .lib{background:var(--marine);color:#fff;outline:1px dotted #ff0}
 #bureau>.ico{color:#fff;text-shadow:1px 1px #000}
@@ -177,6 +177,7 @@ table.det td svg{vertical-align:middle;margin-right:5px}
 </div>
 
 <script src="../data-casier.js"></script>
+<script src="../logiciels.js"></script>
 <script>
 (function () {
 "use strict";
@@ -344,6 +345,12 @@ function brancherRedim(f, p) {
   });
 }
 /* Ouvre une fenêtre. Options : id (instance unique), titre, icone, l, h, redim, boite, centre, contenu(corps, f). */
+/* Abscisse de départ des fenêtres : à droite des colonnes d’icônes du bureau (leur nombre dépend de la hauteur de l’écran). */
+function abscisseBase() {
+  var par = Math.max(1, Math.floor((window.innerHeight - HAUTEUR_BARRE - 16) / 106));
+  var nb = bureau.querySelectorAll(":scope > .ico").length;
+  return Math.ceil(nb / par) * 138 + 12;
+}
 function ouvrirFenetre(o) {
   if (o.id) {
     for (var i = 0; i < fenetres.length; i++) if (fenetres[i].id === o.id) { restaurer(fenetres[i]); return fenetres[i]; }
@@ -351,7 +358,7 @@ function ouvrirFenetre(o) {
   var f = { id: o.id || null, max: false, min: false, opt: o };
   var L = Math.min(o.l || 420, window.innerWidth - 8), H = Math.min(o.h || 320, window.innerHeight - HAUTEUR_BARRE - 8);
   var n = fenetres.length % 7;
-  var x = o.centre ? (window.innerWidth - L) / 2 : Math.max(0, Math.min(110 + n * 28, window.innerWidth - L - 4)); /* 110 px : on laisse les icônes du bureau visibles */
+  var x = o.centre ? (window.innerWidth - L) / 2 : Math.max(0, Math.min(abscisseBase() + n * 28, window.innerWidth - L - 4)); /* on laisse les icônes du bureau visibles */
   var y = o.centre ? (window.innerHeight - HAUTEUR_BARRE - H) / 2 : Math.max(0, Math.min(30 + n * 28, window.innerHeight - HAUTEUR_BARRE - H - 4));
   f.el = el("div", "fenetre relief");
   f.el.setAttribute("role", "group"); f.el.setAttribute("aria-label", o.titre);
@@ -433,11 +440,24 @@ function descriptionLongue(parent, it) {
   });
 }
 
+/* ===== SECTION : Petits logiciels d’époque (logiciels.js) ===== */
+if (window.LOGICIELS) { ICONES.demineur = LOGICIELS.icones.demineur; ICONES.musique = LOGICIELS.icones.musique; }
+/* Démineur : jeu de réflexion classique, dessiné dans logiciels.js. */
+function ouvrirDemineur() {
+  if (!window.LOGICIELS) { boite("Le fichier logiciels.js est introuvable : vérifie qu’il est à côté des dossiers 98, xp et macintosh.", "alerte"); return; }
+  ouvrirFenetre({ id: "demineur", titre: "Démineur", icone: "demineur", l: 320, h: 430, contenu: function (corps) { LOGICIELS.demineur(corps, "win"); } });
+}
+/* Lecteur audio : mélodies originales fabriquées par Web Audio (aucun fichier musical). */
+function ouvrirLecteur() {
+  if (!window.LOGICIELS) { boite("Le fichier logiciels.js est introuvable : vérifie qu’il est à côté des dossiers 98, xp et macintosh.", "alerte"); return; }
+  ouvrirFenetre({ id: "lecteur", titre: "Lecteur audio", icone: "musique", l: 360, h: 470, contenu: function (corps) { LOGICIELS.lecteur(corps, "win"); } });
+}
+
 /* ===== SECTION : Icônes cliquables ===== */
 /* Crée une icône : un clic sélectionne, double-clic ou Entrée ouvre. */
 function creerIcone(parent, nom, libelle, action) {
   var b = bouton("ico", "");
-  b.appendChild(iconeEl(nom, 48)); b.appendChild(el("span", "lib", libelle));
+  b.appendChild(iconeEl(nom, 64)); b.appendChild(el("span", "lib", libelle));
   b.addEventListener("click", function () {
     var s = parent.querySelectorAll(".ico.sel"); for (var i = 0; i < s.length; i++) s[i].classList.remove("sel");
     b.classList.add("sel");
@@ -789,6 +809,8 @@ function construireDemarrer() {
   entree(m, "casier", "Mon Casier", function () { ouvrirDossier(null); });
   entree(m, "galerie", "Galerie", ouvrirGalerie);
   entree(m, "loupe", "Rechercher…", ouvrirRecherche);
+  entree(m, "demineur", "Démineur", ouvrirDemineur);
+  entree(m, "musique", "Lecteur audio", ouvrirLecteur);
   entree(m, "aide", "À propos", ouvrirAPropos);
   m.appendChild(el("hr"));
   entree(m, "ordi", "Casier classique", function () { aller("../"); });
@@ -865,6 +887,8 @@ ORDRE_FAMILLES.forEach(function (k) { creerIcone(bureau, "dossier", FAMILLES[k].
 creerIcone(bureau, "galerie", "Galerie", ouvrirGalerie);
 creerIcone(bureau, "loupe", "Rechercher", ouvrirRecherche);
 creerIcone(bureau, "duel", "Duel", ouvrirDuel);
+creerIcone(bureau, "demineur", "Démineur", ouvrirDemineur);
+creerIcone(bureau, "musique", "Lecteur audio", ouvrirLecteur);
 creerIcone(bureau, "aide", "À propos", ouvrirAPropos);
 if (!RESSOURCES.length) boite("Casier 98", "La liste des ressources n’a pas pu être lue. Vérifie que le fichier data-casier.js est bien à côté du dossier 98.", "alerte");
 majHorloge(); setInterval(majHorloge, 15000);

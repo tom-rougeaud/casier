@@ -40,7 +40,7 @@ button{font:inherit;color:inherit;cursor:default}
 
 /* ===== SECTION : Bureau et icônes ===== */
 #bureau{position:absolute;left:0;right:0;top:24px;bottom:0;overflow:hidden}
-.ico{width:96px;padding:4px;background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;line-height:1.2;min-height:46px}
+.ico{width:116px;padding:4px;background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;line-height:1.2;min-height:74px}
 .ico .lib{padding:1px 4px;background:#fff;border:1px solid transparent;word-break:break-word}
 .ico.sel svg{filter:invert(1)}
 .ico.sel .lib{background:#000;color:#fff}
@@ -112,6 +112,11 @@ button{font:inherit;color:inherit;cursor:default}
 #amorce .bj{font:italic 400 clamp(64px,16vw,120px)/1 var(--cursive);margin:6px 0 16px}
 #arret{background:#000;color:#fff;font-size:15px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.puces{display:flex;flex-wrap:wrap;gap:4px;margin:6px 6px 2px}
+.puce{padding:1px 9px;border-radius:10px;background:#fff;border:1px solid #808080;font-size:11px}
+.desc h4{margin:10px 0 4px;font-size:12px}.desc h4:first-child{margin-top:0}
+.desc ul{margin:0 0 8px;padding-left:18px}.desc li{line-height:1.4;user-select:text;-webkit-user-select:text}
+.vue-liste .ico svg{width:20px;height:20px}
 </style>
 </head>
 <body>
@@ -312,11 +317,46 @@ function boite(texte, icone, boutons) {
   });
 }
 
+/* ===== SECTION : Plein écran, tags et description longue (v1.2) ===== */
+/* Plein écran : les navigateurs l’interdisent sans geste de l’utilisateur(trice) ;
+   on le demande donc au premier clic ou à la première touche. Échap pour quitter. */
+function basculerPlein() {
+  try {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(function () {});
+  } catch (e) { /* plein écran indisponible : on continue sans */ }
+}
+var pleinTente = false;
+function premierGeste() {
+  if (pleinTente) return; pleinTente = true;
+  try { if (!document.fullscreenElement && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(function () {}); } catch (e) { /* ignoré */ }
+}
+document.addEventListener("pointerdown", premierGeste, true);
+document.addEventListener("keydown", premierGeste, true);
+/* Pastilles des mots-clés d’une ressource (texte simple, jamais de HTML). */
+function puces(it) {
+  var d = el("div", "puces");
+  (it.g || []).forEach(function (m) { d.appendChild(el("span", "puce", propre(m))); });
+  return d;
+}
+/* Description longue (texte simple de data-casier.js) : titres, listes et paragraphes. */
+function descriptionLongue(parent, it) {
+  var ul = null;
+  String(it.l || it.x || "").split("\n").forEach(function (ligne) {
+    ligne = ligne.trim(); if (!ligne) return;
+    if (ligne.indexOf("- ") === 0) { if (!ul) { ul = el("ul"); parent.appendChild(ul); } ul.appendChild(el("li", "", propre(ligne.slice(2)))); return; }
+    ul = null;
+    if (ligne.indexOf("## ") === 0) parent.appendChild(el("h4", "", propre(ligne.slice(3))));
+    else if (/^[←-⯿\uD83C-\uDBFF]/.test(ligne) && ligne.length < 70) parent.appendChild(el("h4", "", propre(ligne)));
+    else parent.appendChild(el("p", "", propre(ligne)));
+  });
+}
+
 /* ===== SECTION : Icônes cliquables ===== */
 /* Un clic sélectionne, un double-clic (ou Entrée) ouvre. */
 function creerIcone(parent, nom, libelle, action, colonne) {
   var b = bouton("ico", "");
-  b.appendChild(iconeEl(nom, 32)); b.appendChild(el("span", "lib", libelle));
+  b.appendChild(iconeEl(nom, 48)); b.appendChild(el("span", "lib", libelle));
   if (colonne) b.appendChild(el("span", "col", colonne));
   b.addEventListener("click", function () {
     var s = parent.querySelectorAll(".ico.sel"); for (var i = 0; i < s.length; i++) s[i].classList.remove("sel");
@@ -362,7 +402,8 @@ function ouvrirFiche(it) {
       defile.appendChild(tete);
       var srcImg = vignetteDe(it) || (it.i ? "../" + it.i : null);
       if (srcImg) { var img = el("img"); img.alt = "Aperçu de " + propre(it.t); img.src = srcImg; defile.appendChild(img); }
-      defile.appendChild(el("p", "", propre(it.x)));
+      defile.appendChild(puces(it));
+      var desc = el("div", "desc"); desc.style.margin = "8px 0"; descriptionLongue(desc, it); defile.appendChild(desc);
       var dl = el("dl");
       [["Type", (FAMILLES[it.k] || {}).nom || "Autre"], ["Version", it.v ? it.v : "non précisée"], ["Modifié le", dateFr(it.d)],
        ["Mots-clés", (it.g || []).join(", ")], ["Adresse", adresse(it)]].forEach(function (c) {
@@ -613,6 +654,7 @@ ajouterMenu("Affichage", [
 ajouterMenu("Spécial", [
   { t: "Vider la corbeille…", f: function () { boite("La corbeille est déjà vide.", "info"); } },
   "-",
+  { t: "Plein écran (Échap pour quitter)", f: basculerPlein },
   { t: "Éteindre…", f: boiteArret }
 ]);
 var horloge = el("div"); horloge.id = "horloge"; barreMenus.appendChild(horloge);

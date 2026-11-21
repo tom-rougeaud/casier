@@ -38,7 +38,7 @@ a{color:#000080}
 /* ===== SECTION : Bureau et icônes ===== */
 #bureau{position:absolute;left:0;top:0;right:0;bottom:30px;padding:8px;display:flex;flex-direction:column;
   flex-wrap:wrap;align-content:flex-start;gap:8px;overflow:hidden}
-.ico{width:84px;min-height:44px;padding:3px;background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;line-height:1.2}
+.ico{width:108px;min-height:72px;padding:3px;background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;line-height:1.2}
 .ico .lib{padding:1px 3px;word-break:break-word}
 .ico.sel .lib{background:var(--marine);color:#fff;outline:1px dotted #ff0}
 #bureau>.ico{color:#fff;text-shadow:1px 1px #000}
@@ -142,6 +142,11 @@ table.det td svg{vertical-align:middle;margin-right:5px}
 .barre-duel{height:18px;margin:4px 0 8px;display:flex}
 .barre-duel i{display:block;height:100%}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.puces{display:flex;flex-wrap:wrap;gap:4px;margin:6px 6px 2px}
+.puce{padding:1px 9px;border-radius:10px;background:#fff;border:1px solid #808080;font-size:11px}
+.desc h4{margin:10px 0 4px;font-size:12px}.desc h4:first-child{margin-top:0}
+.desc ul{margin:0 0 8px;padding-left:18px}.desc li{line-height:1.4;user-select:text;-webkit-user-select:text}
+.vue-liste .ico svg{width:20px;height:20px}
 </style>
 </head>
 <body>
@@ -393,11 +398,46 @@ function boite(titre, texte, icone, boutons) {
   });
 }
 
+/* ===== SECTION : Plein écran, tags et description longue (v1.2) ===== */
+/* Plein écran : les navigateurs l’interdisent sans geste de l’utilisateur(trice) ;
+   on le demande donc au premier clic ou à la première touche. Échap pour quitter. */
+function basculerPlein() {
+  try {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(function () {});
+  } catch (e) { /* plein écran indisponible : on continue sans */ }
+}
+var pleinTente = false;
+function premierGeste() {
+  if (pleinTente) return; pleinTente = true;
+  try { if (!document.fullscreenElement && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(function () {}); } catch (e) { /* ignoré */ }
+}
+document.addEventListener("pointerdown", premierGeste, true);
+document.addEventListener("keydown", premierGeste, true);
+/* Pastilles des mots-clés d’une ressource (texte simple, jamais de HTML). */
+function puces(it) {
+  var d = el("div", "puces");
+  (it.g || []).forEach(function (m) { d.appendChild(el("span", "puce", propre(m))); });
+  return d;
+}
+/* Description longue (texte simple de data-casier.js) : titres, listes et paragraphes. */
+function descriptionLongue(parent, it) {
+  var ul = null;
+  String(it.l || it.x || "").split("\n").forEach(function (ligne) {
+    ligne = ligne.trim(); if (!ligne) return;
+    if (ligne.indexOf("- ") === 0) { if (!ul) { ul = el("ul"); parent.appendChild(ul); } ul.appendChild(el("li", "", propre(ligne.slice(2)))); return; }
+    ul = null;
+    if (ligne.indexOf("## ") === 0) parent.appendChild(el("h4", "", propre(ligne.slice(3))));
+    else if (/^[←-⯿\uD83C-\uDBFF]/.test(ligne) && ligne.length < 70) parent.appendChild(el("h4", "", propre(ligne)));
+    else parent.appendChild(el("p", "", propre(ligne)));
+  });
+}
+
 /* ===== SECTION : Icônes cliquables ===== */
 /* Crée une icône : un clic sélectionne, double-clic ou Entrée ouvre. */
 function creerIcone(parent, nom, libelle, action) {
   var b = bouton("ico", "");
-  b.appendChild(iconeEl(nom, 32)); b.appendChild(el("span", "lib", libelle));
+  b.appendChild(iconeEl(nom, 48)); b.appendChild(el("span", "lib", libelle));
   b.addEventListener("click", function () {
     var s = parent.querySelectorAll(".ico.sel"); for (var i = 0; i < s.length; i++) s[i].classList.remove("sel");
     b.classList.add("sel");
@@ -437,10 +477,10 @@ function barreMenu(menus) {
 /* ===== SECTION : Fiche d’une ressource (fenêtre « Propriétés ») ===== */
 function ouvrirFiche(it) {
   ouvrirFenetre({
-    id: "fiche-" + it.u, titre: "Propriétés de " + propre(it.t), icone: iconeDe(it), l: 520, h: 490, redim: false,
+    id: "fiche-" + it.u, titre: "Propriétés de " + propre(it.t), icone: iconeDe(it), l: 580, h: 560, redim: false,
     contenu: function (corps, f) {
       var onglets = el("div", "onglets"); onglets.setAttribute("role", "tablist");
-      var general = el("div", "panneau"), apercu = el("div", "panneau");
+      var general = el("div", "panneau"), desc = el("div", "panneau desc"), apercu = el("div", "panneau");
       /* Onglet Général */
       var tete = el("div", "fiche-tete"); tete.appendChild(iconeEl(iconeDe(it), 32)); tete.appendChild(el("span", "", propre(it.t)));
       general.appendChild(tete);
@@ -451,6 +491,7 @@ function ouvrirFiche(it) {
         dl.appendChild(el("dt", "", c[0])); dl.appendChild(el("dd", "", c[1]));
       });
       general.appendChild(dl);
+      descriptionLongue(desc, it);
       /* Onglet Aperçu : couverture si elle est dans le dépôt, sinon message */
       var srcImg = vignetteDe(it) || (it.i ? "../" + it.i : null);
       if (srcImg) {
@@ -459,16 +500,16 @@ function ouvrirFiche(it) {
       } else {
         apercu.appendChild(el("p", "", "Pas d’aperçu pour ce fichier."));
       }
-      var panneaux = [general, apercu];
+      var panneaux = [general, desc, apercu];
       /* Bascule d’onglet */
       function choisir(n) {
         panneaux.forEach(function (p, i) { p.hidden = i !== n; });
         [].forEach.call(onglets.children, function (b, i) { b.setAttribute("aria-selected", i === n ? "true" : "false"); });
       }
-      ["Général", "Aperçu"].forEach(function (nom, i) {
+      ["Général", "Description", "Aperçu"].forEach(function (nom, i) {
         var b = bouton("onglet", nom, function () { choisir(i); }); b.setAttribute("role", "tab"); onglets.appendChild(b);
       });
-      corps.appendChild(onglets); corps.appendChild(general); corps.appendChild(apercu); choisir(srcImg ? 1 : 0);
+      corps.appendChild(puces(it)); corps.appendChild(onglets); corps.appendChild(general); corps.appendChild(desc); corps.appendChild(apercu); choisir(srcImg ? 2 : 1);
       var bas = el("div", "boutons");
       var ouvrir = bouton("relief btn", "Ouvrir", function () { ouvrirLien(adresse(it)); });
       bas.appendChild(ouvrir); bas.appendChild(bouton("relief btn", "Fermer", function () { fermer(f); }));
@@ -753,6 +794,7 @@ function construireDemarrer() {
   entree(m, "ordi", "Casier classique", function () { aller("../"); });
   entree(m, "ordi", "Version Macintosh", function () { aller("../macintosh/"); });
   entree(m, "ordi", "Version Windows XP", function () { aller("../xp/"); });
+  entree(m, "ordi", "Plein écran", basculerPlein);
   m.appendChild(el("hr"));
   entree(m, "ordi", "Arrêter…", boiteArret);
   menuDem.appendChild(m);

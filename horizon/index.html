@@ -169,7 +169,7 @@ footer small{display:block;margin-top:34px;opacity:.65}
 <script>
 (function () {
   "use strict";
-  var CONF = {"cle": "horizon", "apercus": "mac", "fam": ["linear-gradient(135deg,#1c2250,#0e1024)", "linear-gradient(135deg,#123a3a,#0b1b1d)", "linear-gradient(135deg,#3a2a18,#1a130c)", "linear-gradient(135deg,#2a1d3f,#120d1e)"]};
+  var CONF = {"cle": "horizon", "apercus": "mac", "fam": ["linear-gradient(135deg,#1c2250,#0e1024)", "linear-gradient(135deg,#123a3a,#0b1b1d)", "linear-gradient(135deg,#3a2a18,#1a130c)", "linear-gradient(135deg,#2a1d3f,#120d1e)"], "illu": null};
   var D = window.CASIER || { base: "", items: [] }, R = D.items || [];
   var FAM = { J: "Jeux", O: "Outils", C: "Cours et manuels", E: "Évaluations" }, ORDRE = ["J", "O", "C", "E"];
   var reduit = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
@@ -192,7 +192,7 @@ footer small{display:block;margin-top:34px;opacity:.65}
   tp.textContent = ""; var spansM = mots.map(function (m) { var s = el("span", "mot", m); tp.appendChild(s); tp.appendChild(document.createTextNode(" ")); return s; });
 
   /* ----- Chiffres ----- */
-  var stats = [[R.length, "ressources"], [4, "familles"], [R.filter(function (r) { return (r.g || []).indexOf("Smartphone") >= 0; }).length, "pensées pour le téléphone"], [0, "compte à créer"]];
+  var stats = [[R.length, "ressources"], [4, "familles"], [R.filter(function (r) { return r.p === 1; }).length, "pensées pour le téléphone"], [0, "compte à créer"]];
   var cs = [];
   stats.forEach(function (s) { var d = el("div", "chiffre"), n = el("strong", "", "0"), t = el("span", "", s[1]); d.appendChild(n); d.appendChild(t); $("chiffres").appendChild(d); cs.push({ d: d, n: n, v: s[0], fait: false }); });
   function compter(c) {
@@ -222,6 +222,7 @@ footer small{display:block;margin-top:34px;opacity:.65}
     var items = R.filter(function (r) { return r.k === k; });
     var c = el("article", "famille"); c.style.setProperty("--i", i); c.style.setProperty("--fam", CONF.fam[i]);
     c.appendChild(el("span", "n", String(items.length)));
+    if (CONF.illu) { var il = el("div", "illu"); il.setAttribute("aria-hidden", "true"); il.innerHTML = CONF.illu[i]; c.appendChild(il); }
     var h = el("h3", "", FAM[k]); c.appendChild(h);
     var ul = el("ul"); items.slice(0, 8).forEach(function (it) { var li = el("li"), b = el("button", "", propre(it.t)); b.type = "button"; b.addEventListener("click", function () { ouvrir(it, b); }); li.appendChild(b); ul.appendChild(li); });
     c.appendChild(ul); pile.appendChild(c); cartesF.push(c);

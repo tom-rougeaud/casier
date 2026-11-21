@@ -718,7 +718,7 @@ function ouvrirRecherche() {
   ouvrirFenetre({
     id: "recherche", titre: "Rechercher : Fichiers", icone: "loupe", l: 520, h: 380,
     contenu: function (corps) {
-      var champ = el("input"); champ.type = "search"; champ.className = "creux"; champ.setAttribute("aria-label", "Mot à chercher");
+      var champ = el("input"); champ.type = "search"; champ.setAttribute("autocomplete", "off"); champ.setAttribute("autocapitalize", "off"); champ.setAttribute("autocorrect", "off"); champ.spellcheck = false; champ.name = "casier-recherche-" + Math.random().toString(36).slice(2, 8); champ.setAttribute("data-lpignore", "true"); champ.setAttribute("data-1p-ignore", "true"); champ.setAttribute("data-bwignore", "true"); champ.setAttribute("data-form-type", "other"); champ.readOnly = true; champ.addEventListener("focus", function () { champ.readOnly = false; }); champ.addEventListener("pointerdown", function () { champ.readOnly = false; }); champ.className = "creux"; champ.setAttribute("aria-label", "Mot à chercher");
       champ.placeholder = "Un titre, un mot-clé, un niveau…";
       var zone = el("div", "zone creux"), etat = el("span", "creux", "");
       /* Filtre les ressources sur le titre, la description et les mots-clés. */

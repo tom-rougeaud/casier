@@ -352,7 +352,7 @@
     porte.style.cssText = "background:" + P[0] + ";color:" + P[1];
     porte.setAttribute("role", "dialog"); porte.setAttribute("aria-label", "Allumer");
     porte.innerHTML = '<button id="intro-marche" type="button" aria-label="Allumer ' + P[3] + '">' + ICO_MARCHE + '</button>' +
-      '<div>Appuie pour allumer ' + P[3] + '</div><label><input type="checkbox" id="intro-non"> Ne plus afficher l’intro</label>' +
+      '<div>Appuie pour allumer ' + P[3] + '</div><label><input type="checkbox" id="intro-non" autocomplete="off"> Ne plus afficher l’intro</label>' +
       '<button type="button" class="intro-lien" id="intro-sans">Passer sans intro</button>';
     porte.querySelector("#intro-marche").style.color = P[1];
     document.body.appendChild(porte);

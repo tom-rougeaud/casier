@@ -475,7 +475,7 @@ function renderPublic(){
   const m=$('#main');
   m.innerHTML=
    '<section class="hero"><h2>Casier de <span>'+OWNER+'</span></h2><p>Ressources pédagogiques numériques — jeux, exerciseurs, outils et cours</p></section>'+
-   '<div class="bar"><div class="search"><i aria-hidden="true">🔎</i><label class="sr" for="q">Rechercher une ressource</label><input id="q" type="search" placeholder="Rechercher une ressource…" value="'+esc(F.q)+'" autocomplete="off"></div>'+
+   '<div class="bar"><div class="search"><i aria-hidden="true">🔎</i><label class="sr" for="q">Rechercher une ressource</label><input id="q" type="search" name="casier-recherche" data-lpignore="true" data-1p-ignore="true" placeholder="Rechercher une ressource…" value="'+esc(F.q)+'" autocomplete="off"></div>'+
    '<label class="sr" for="sortsel">Trier</label><select class="sel" id="sortsel">'+[['perso','↕ Mon ordre'],['az','A → Z'],['za','Z → A'],['new','Plus récent'],['old','Plus ancien'],['date','Date de publication']].map(o=>'<option value="'+o[0]+'"'+(F.sort===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+'</select>'+
    '<button class="f-pill" id="favbtn" aria-pressed="'+F.fav+'">♥ Favoris ('+pub.filter(r=>FAV.has(r.id)).length+')</button></div>'+
    '<div id="pills">'+pills(TT,F.th,'th',pub)+pills(TG,F.tg,'tg',pub)+'</div>'+
@@ -535,7 +535,7 @@ function renderAdmin(){
    '<button class="btn ghost" data-act="import">⬆️ Importer ressources.json</button>'+
    '<button class="btn ghost" data-act="export">⬇️ Sauvegarde JSON</button>'+
    '<button class="btn ghost" data-act="sql">🛠️ Configuration base</button></div>'+
-   '<div class="bar" style="justify-content:flex-start"><div class="search"><i aria-hidden="true">🔎</i><label class="sr" for="aq">Filtrer</label><input id="aq" type="search" placeholder="Filtrer la liste…" value="'+esc(A.q)+'"></div>'+
+   '<div class="bar" style="justify-content:flex-start"><div class="search"><i aria-hidden="true">🔎</i><label class="sr" for="aq">Filtrer</label><input id="aq" type="search" autocomplete="off" placeholder="Filtrer la liste…" value="'+esc(A.q)+'"></div>'+
    '<label class="sr" for="ast">Statut</label><select class="sel" id="ast">'+[['all','Toutes'],['pub','Publiées'],['draft','Brouillons']].map(o=>'<option value="'+o[0]+'"'+(A.status===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+'</select></div>'+
    (filtered?'<p class="hint">Un filtre est actif : le glisser-déposer est désactivé (retirez le filtre pour réordonner).</p>':'<p class="hint">Glissez la poignée ⠿ (souris ou doigt) ou utilisez ▲ ▼ pour réordonner. L’ordre est enregistré automatiquement.</p>')+
    '<div id="bulk"></div><div class="alist" id="alist">'+
@@ -678,11 +678,11 @@ function richOut(){if(!QL)return E.desc_long;return QL.getText().trim()?clean(QL
 function showTab(t){
   const p=$('#pane');QL=null;p.onclick=null;
   if(t==='info'){
-    p.innerHTML='<label class="l" for="e-title">Titre *</label><input class="in" id="e-title" value="'+esc(E.title)+'">'+
-     '<label class="l" for="e-url">Lien principal (bouton « Accéder à la ressource »)</label><input class="in" id="e-url" type="url" placeholder="https://…" value="'+esc(E.url)+'">'+
-     '<div class="row2"><div><label class="l" for="e-version">Version</label><input class="in" id="e-version" placeholder="ex. 3.1" value="'+esc(E.version)+'"></div><div><label class="l" for="e-date">Date de publication</label><input class="in" id="e-date" type="date" value="'+esc(E.pub_date)+'"></div></div>'+
-     '<label class="l" for="e-desc">Description courte (carte)</label><textarea class="in" id="e-desc" maxlength="400">'+esc(E.description)+'</textarea>'+
-     '<label class="l">Description détaillée (fiche)</label>'+(typeof Quill!=='undefined'?'<div id="e-long"></div>':'<textarea class="in" id="e-long" style="min-height:160px"></textarea>')+
+    p.innerHTML='<label class="l" for="e-title">Titre *</label><input class="in" id="e-title" autocomplete="off" value="'+esc(E.title)+'">'+
+     '<label class="l" for="e-url">Lien principal (bouton « Accéder à la ressource »)</label><input class="in" id="e-url" type="url" autocomplete="off" placeholder="https://…" value="'+esc(E.url)+'">'+
+     '<div class="row2"><div><label class="l" for="e-version">Version</label><input class="in" id="e-version" autocomplete="off" placeholder="ex. 3.1" value="'+esc(E.version)+'"></div><div><label class="l" for="e-date">Date de publication</label><input class="in" id="e-date" type="date" autocomplete="off" value="'+esc(E.pub_date)+'"></div></div>'+
+     '<label class="l" for="e-desc">Description courte (carte)</label><textarea class="in" id="e-desc" autocomplete="off" maxlength="400">'+esc(E.description)+'</textarea>'+
+     '<label class="l">Description détaillée (fiche)</label>'+(typeof Quill!=='undefined'?'<div id="e-long"></div>':'<textarea class="in" id="e-long" autocomplete="off" style="min-height:160px"></textarea>')+
      '<label class="l" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="e-pub"'+(E.is_published?' checked':'')+'> Publiée (visible par les visiteurs)</label>'+(hasCols?'':'<p class="hint">Disponible après la mise à niveau de la base.</p>');
     if(typeof Quill!=='undefined'){
       QL=new Quill('#e-long',{theme:'snow',modules:{toolbar:[[{header:[2,3,false]}],['bold','italic','underline'],[{list:'ordered'},{list:'bullet'}],['link','blockquote','clean']]}});
@@ -691,7 +691,7 @@ function showTab(t){
   }
   if(t==='img'){
     p.innerHTML='<div class="split"><div><div class="imgbox" id="e-imgbox"></div><p class="hint">Aperçu fidèle de la carte (16:9). <b>Glissez l’image</b> pour la cadrer (souris ou doigt), le curseur règle le zoom.</p></div><div>'+
-     '<label class="l" for="e-img">Adresse de l’image (URL)</label><input class="in" id="e-img" placeholder="https://…" value="'+(E.main_img&&!E.main_img.startsWith('data:')?esc(E.main_img):'')+'">'+
+     '<label class="l" for="e-img">Adresse de l’image (URL)</label><input class="in" id="e-img" autocomplete="off" placeholder="https://…" value="'+(E.main_img&&!E.main_img.startsWith('data:')?esc(E.main_img):'')+'">'+
      '<label class="l">Ou téléverser une image</label><input type="file" id="e-imgfile" accept="image/*" class="in">'+
      '<label class="l" for="e-px">Décalage horizontal</label><input type="range" id="e-px" min="-300" max="300" value="'+(Number(E.main_px)||0)+'">'+
      '<label class="l" for="e-py">Décalage vertical</label><input type="range" id="e-py" min="-300" max="300" value="'+(Number(E.main_py)||0)+'">'+
@@ -727,7 +727,7 @@ function drawFiles(){
   const p=$('#pane');
   p.innerHTML='<p class="hint">PDF, pages HTML, documents… téléversés dans votre espace Supabase, ou simples liens. Les visiteurs peuvent les ouvrir ou les télécharger.</p>'+
    '<div id="atts">'+(E.attachments.length?E.attachments.map((a,i)=>
-    '<div class="att" data-i="'+i+'"><input class="in" style="flex:2;min-width:140px" data-an value="'+esc(a.name)+'" aria-label="Nom du fichier">'+
+    '<div class="att" data-i="'+i+'"><input class="in" style="flex:2;min-width:140px" data-an value= autocomplete="off""'+esc(a.name)+'" aria-label="Nom du fichier">'+
     '<select class="in" style="flex:0 0 110px" data-at aria-label="Type">'+[['pdf','PDF'],['html','Page HTML'],['link','Lien'],['file','Autre']].map(o=>'<option value="'+o[0]+'"'+(a.type===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+'</select>'+
     '<a class="btn sm ghost" href="'+esc(a.url)+'" target="_blank" rel="noopener noreferrer" aria-label="Tester le lien">↗</a>'+
     '<button class="ibtn" data-aup="'+i+'" aria-label="Monter">▲</button><button class="ibtn" data-adn="'+i+'" aria-label="Descendre">▼</button><button class="ibtn" data-adel="'+i+'" aria-label="Retirer">🗑️</button></div>').join(''):'<p class="empty">Aucun fichier joint.</p>')+'</div>'+
@@ -789,8 +789,8 @@ async function saveEditor(){
 function openTags(){
   const T={th:TT.slice(),tg:TG.slice()},ren={th:{},tg:{}};
   const draw=()=>{
-    const col=(k,title)=>'<div><h3>'+title+'</h3>'+T[k].map((t,i)=>'<div class="tm-item"><input class="in" data-k="'+k+'" data-i="'+i+'" value="'+esc(t)+'" aria-label="Nom de la catégorie"><button class="ibtn" data-tu="'+k+':'+i+'" aria-label="Monter">▲</button><button class="ibtn" data-td="'+k+':'+i+'" aria-label="Descendre">▼</button><button class="ibtn" data-tx="'+k+':'+i+'" aria-label="Supprimer">🗑️</button></div>').join('')+
-      '<div class="tm-item"><input class="in" id="new-'+k+'" placeholder="Nouvelle catégorie…"><button class="btn sm" data-tadd="'+k+'">Ajouter</button></div></div>';
+    const col=(k,title)=>'<div><h3>'+title+'</h3>'+T[k].map((t,i)=>'<div class="tm-item"><input class="in" data-k="'+k+'" autocomplete="off" data-i="'+i+'" value="'+esc(t)+'" aria-label="Nom de la catégorie"><button class="ibtn" data-tu="'+k+':'+i+'" aria-label="Monter">▲</button><button class="ibtn" data-td="'+k+':'+i+'" aria-label="Descendre">▼</button><button class="ibtn" data-tx="'+k+':'+i+'" aria-label="Supprimer">🗑️</button></div>').join('')+
+      '<div class="tm-item"><input class="in" id="new-'+k+'" autocomplete="off" placeholder="Nouvelle catégorie…"><button class="btn sm" data-tadd="'+k+'">Ajouter</button></div></div>';
     $('#tm').innerHTML='<div class="split">'+col('th','Thèmes')+col('tg','Public cible')+'</div>';
   };
   // suivi des renommages : on retient le nom d’origine par position

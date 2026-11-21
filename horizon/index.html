@@ -235,7 +235,7 @@ footer small{display:block;margin-top:34px;opacity:.65}
     b.addEventListener("click", function () { filtre = p[0]; Object.keys(chips).forEach(function (k) { chips[k].setAttribute("aria-pressed", k === filtre); }); dessiner(); });
     outils.appendChild(b);
   });
-  var rech = el("input"); rech.id = "rech"; rech.type = "search"; rech.placeholder = "Chercher une ressource…"; rech.setAttribute("aria-label", "Chercher une ressource");
+  var rech = el("input"); rech.id = "rech"; rech.type = "search"; rech.setAttribute("autocomplete", "off"); rech.setAttribute("autocapitalize", "off"); rech.setAttribute("autocorrect", "off"); rech.spellcheck = false; rech.name = "casier-recherche-" + Math.random().toString(36).slice(2, 8); rech.setAttribute("data-lpignore", "true"); rech.setAttribute("data-1p-ignore", "true"); rech.setAttribute("data-bwignore", "true"); rech.setAttribute("data-form-type", "other"); rech.readOnly = true; rech.addEventListener("focus", function () { rech.readOnly = false; }); rech.addEventListener("pointerdown", function () { rech.readOnly = false; }); rech.placeholder = "Chercher une ressource…"; rech.setAttribute("aria-label", "Chercher une ressource");
   rech.addEventListener("input", function () { q = simple(rech.value); dessiner(); }); outils.appendChild(rech);
   function dessiner() {
     grille.textContent = "";

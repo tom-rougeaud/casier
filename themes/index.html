@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src 'self';">
-<title>Thèmes rétro — Casier Pédagogique Numérique</title>
+<title>Thèmes — Casier Pédagogique Numérique</title>
 <!--
   Projet : Casier — page « Thèmes rétro »  ·  Version : 1.0.0  ·  Date : 21/11/2026
   Auteur : Tom Rougeaud  ·  Licence : CC BY-NC 4.0
   Réalisé avec l’aide de l’IA : Claude Sonnet 5.5 (Anthropic)
-  Page statique : elle présente les versions rétro du casier. Aucune donnée n’est collectée, aucun script, aucune ressource distante.
+  Page statique : elle présente tous les thèmes du casier. Aucune donnée n’est collectée, aucun script, aucune ressource distante.
 -->
 <style>
 /* ===== Variables et base (palette sobre : ardoise et marine) ===== */
@@ -29,14 +29,16 @@ h1{margin:0 0 6px;font-size:1.8rem}
 .corps p{margin:0;color:var(--doux);font-size:.95rem}
 .btn{margin-top:auto;align-self:flex-start;display:inline-block;padding:8px 18px;border-radius:999px;background:var(--accent);color:#fff;text-decoration:none;font-weight:600}
 .btn:focus-visible,a:focus-visible{outline:3px solid #7fa4ee;outline-offset:2px}
+.groupe{margin:34px 0 14px;font-size:1.3rem}
 .note{margin-top:26px;color:var(--doux);font-size:.9rem}
 </style>
 </head>
 <body>
 <main class="wrap">
   <a class="retour" href="../">← Retour au casier</a>
-  <h1>Thèmes rétro du casier</h1>
-  <p class="intro">Le même casier, habillé comme des ordinateurs d’autrefois. Les ressources sont les mêmes : seul l’affichage change.</p>
+  <h1>Thèmes du casier</h1>
+  <p class="intro">Le même casier, habillé comme des ordinateurs d’autrefois ou comme un site d’aujourd’hui. Chaque thème démarre par une petite intro animée avec son jingle (on peut la passer ou la désactiver). Les ressources sont les mêmes : seul l’affichage change.</p>
+  <h2 class="groupe">Fenêtres d’époque</h2>
   <div class="grille">
     <article class="carte"><img src="98.webp" alt="Aperçu du thème Windows 98 : bureau turquoise avec fenêtres grises" width="640" height="400">
       <div class="corps"><h2>Windows 98</h2><p>Bureau turquoise, fenêtres grises en relief, menu Démarrer, Démineur et Lecteur audio.</p><a class="btn" href="../98/">Ouvrir</a></div></article>
@@ -46,6 +48,28 @@ h1{margin:0 0 6px;font-size:1.8rem}
       <div class="corps"><h2>Macintosh années 2000</h2><p>Fenêtres arrondies, dock, poire multicolore et grand « hello » cursif. Le Duel est gagné d’avance.</p><a class="btn" href="../macintosh/">Ouvrir</a></div></article>
     <article class="carte"><img src="classique.webp" alt="Aperçu du thème Macintosh classique : fenêtres rayées noir et blanc" width="640" height="400">
       <div class="corps"><h2>Macintosh classique</h2><p>Noir et blanc, fenêtres rayées, barre de menus blanche : l’esprit des premiers Macintosh.</p><a class="btn" href="../macintosh/classique/">Ouvrir</a></div></article>
+    <article class="carte"><img src="w31.webp" alt="Aperçu du thème Windows 3.1 : fenêtres plates à cadre épais sur fond gris" width="640" height="400" loading="lazy">
+      <div class="corps"><h2>Windows 3.1</h2><p>Fenêtres plates à cadre épais, titres bleu marine, sans barre des tâches : l’esprit du Gestionnaire de programmes.</p><a class="btn" href="../w31/">Ouvrir</a></div></article>
+    <article class="carte"><img src="amiga.webp" alt="Aperçu du thème Workbench : écran bleu, texte blanc et orange, barre en haut" width="640" height="400" loading="lazy">
+      <div class="corps"><h2>Workbench</h2><p>Écran bleu, texte blanc et orange, barre d’écran en haut, disquette à insérer au démarrage.</p><a class="btn" href="../amiga/">Ouvrir</a></div></article>
+    <article class="carte"><img src="beos.webp" alt="Aperçu du thème BeOS : fenêtres gris clair avec onglet jaune" width="640" height="400" loading="lazy">
+      <div class="corps"><h2>BeOS</h2><p>Fenêtres gris clair à onglet jaune, mini-barre en haut à droite, formes nettes et sobres.</p><a class="btn" href="../beos/">Ouvrir</a></div></article>
+  </div>
+  <h2 class="groupe">Consoles à phosphore</h2>
+  <div class="grille">
+    <article class="carte"><img src="minitel.webp" alt="Aperçu du thème Minitel : écran noir 40 colonnes dans un boîtier beige" width="640" height="400" loading="lazy">
+      <div class="corps"><h2>Minitel 3615 CASIER</h2><p>Écran noir en 40 colonnes, menus numérotés, touches ENVOI, RETOUR, SOMMAIRE ; bruit de connexion au démarrage.</p><a class="btn" href="../minitel/">Ouvrir</a></div></article>
+    <article class="carte"><img src="apple2.webp" alt="Aperçu du thème Apple II ambre : texte orange sur fond noir" width="640" height="400" loading="lazy">
+      <div class="corps"><h2>Terminal ambre</h2><p>Phosphore ambre sur fond noir, invite « ] », commandes CATALOG et RUN, bip et bruit de disque au démarrage.</p><a class="btn" href="../apple2/">Ouvrir</a></div></article>
+    <article class="carte"><img src="c64.webp" alt="Aperçu du thème C64 : écran bleu et bordure bleu clair" width="640" height="400" loading="lazy">
+      <div class="corps"><h2>Console C64</h2><p>Écran bleu, bordure bleu clair, « READY. » et curseur clignotant : on navigue avec LOAD, LIST et RUN.</p><a class="btn" href="../c64/">Ouvrir</a></div></article>
+  </div>
+  <h2 class="groupe">Sites animés</h2>
+  <div class="grille">
+    <article class="carte"><img src="horizon.webp" alt="Aperçu du thème Horizon : titre géant sur fond sombre avec halos de couleur" width="640" height="400" loading="lazy">
+      <div class="corps"><h2>Horizon (moderne)</h2><p>Site vitrine animé : titre qui grossit, parallaxe, galerie horizontale, cartes empilées et inclinables.</p><a class="btn" href="../horizon/">Ouvrir</a></div></article>
+    <article class="carte"><img src="atomique.webp" alt="Aperçu du thème Atomique : titre rouge sur rayons crème, ambiance années 80" width="640" height="400" loading="lazy">
+      <div class="corps"><h2>Atomique (rétro-futuriste)</h2><p>Même concept en version « futur d’hier » : grain, rayons, couleurs chaudes, cadres épais.</p><a class="btn" href="../atomique/">Ouvrir</a></div></article>
   </div>
   <p class="note">Ces versions lisent une photo des fiches du casier : elle est mise à jour à la demande. Aucune donnée n’est collectée.</p>
 </main>

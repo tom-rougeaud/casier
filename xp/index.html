@@ -232,6 +232,7 @@ table.det tr.sel td{background:#316ac5}
 
 <script src="../data-casier.js"></script>
 <script src="../logiciels.js"></script>
+<script src="../intros.js"></script>
 <script>
 (function () {
 "use strict";
@@ -995,6 +996,8 @@ creerIcone(bureau, "aide", "À propos", ouvrirAPropos);
 if (!RESSOURCES.length) boite("Casier XP", "La liste des ressources n’a pas pu être lue. Vérifie que le fichier data-casier.js est bien à côté du dossier xp.", "alerte");
 majHorloge(); setInterval(majHorloge, 15000);
 demarrer();
+/* Intro animée du thème (intros.js) : porte « appuie pour allumer », puis jingle et logo. */
+if (window.INTROS) INTROS.lancer("xp");
 })();
 </script>
 </body>

@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:">
+<meta name="description" content="Casier pédagogique — version C64 (écran de console d’époque, navigation par numéros et commandes).">
+<title>Casier C64 — Casier pédagogique</title>
+<!--
+  Projet : Casier — thème « C64 »  ·  Version : 1.0.0  ·  Date : 21/11/2026
+  Auteur : Tom Rougeaud  ·  Licence : CC BY-NC 4.0
+  Réalisé avec l’aide de l’IA : Claude Sonnet 5.5 (Anthropic)
+  Principe : console de texte d’époque (40 colonnes) qui lit ../data-casier.js (même source que les autres thèmes).
+  Aucun logo ni son d’une marque réelle : décor, icônes et jingles entièrement originaux.
+  Aucune donnée personnelle, aucune clé, aucun appel réseau : tout est dans les fichiers du dossier.
+-->
+<style>
+/* ===== SECTION : Base commune (console 40 colonnes) ===== */
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{overflow:hidden;font-family:"Courier New","DejaVu Sans Mono","Liberation Mono",monospace}
+#poste{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:12px}
+#boitier{position:relative;display:flex;align-items:center;justify-content:center;flex:1 1 auto;min-height:0;width:100%;max-width:1100px}
+#ecran{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;width:100%;height:100%}
+#verre{position:relative;display:flex;flex-direction:column;overflow:hidden;white-space:pre}
+.l{white-space:pre;overflow:hidden;min-height:var(--lh);height:var(--lh);line-height:var(--lh)}
+.l.cl{cursor:pointer}
+#sortie{flex:1 1 auto;overflow-y:auto;overflow-x:hidden;scrollbar-width:none}
+#sortie::-webkit-scrollbar{display:none}
+#ligne{position:relative;display:flex;height:var(--lh);line-height:var(--lh);white-space:pre;flex:none}
+#clavier{position:absolute;inset:0;width:100%;height:100%;opacity:0;font-size:16px;border:0;background:transparent;color:transparent;caret-color:transparent}
+#bloc{display:inline-block;width:var(--cw);height:calc(var(--lh) * .9);margin-top:calc(var(--lh) * .05);animation:cligne 1s steps(1) infinite}
+#entete,#pied{display:none;flex:none}
+@keyframes cligne{50%{opacity:0}}
+#fx{position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.2) 0 1px,transparent 1px 3px),radial-gradient(ellipse at center,transparent 58%,rgba(0,0,0,.5))}
+#touches{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;flex:none}
+#touches button{font:inherit;cursor:pointer}
+@keyframes scintille{0%,100%{opacity:1}47%{opacity:.965}50%{opacity:1}73%{opacity:.975}}
+@media (prefers-reduced-motion:reduce){#bloc{animation:none}#verre{animation:none!important}}
+@media (prefers-reduced-motion:no-preference){#verre{animation:scintille 5s infinite}}
+button:focus-visible{outline:3px solid currentColor;outline-offset:2px}
+.l.cl:hover,.l.cl:focus-visible{filter:brightness(1.25);text-decoration:underline}
+
+#boitier{flex:none;width:min(100%,1100px,calc((100vh - 96px) * 1.3));width:min(100%,1100px,calc((100dvh - 96px) * 1.3));aspect-ratio:1.3/1}
+@media (max-aspect-ratio:1/1){#boitier{width:100%;aspect-ratio:3/4;max-height:calc(100dvh - 90px)}}
+#verre{color:var(--txt);background:var(--fond);text-shadow:0 0 5px var(--lueur)}
+.inv{background:var(--txt);color:var(--fond);text-shadow:none}
+.tit{color:var(--clair)}
+
+:root{--txt:#b9b5f5;--fond:#4a45b0;--lueur:rgba(185,181,245,.35);--clair:#fff}
+body{background:#7c70da}
+#boitier{background:#7c70da;padding:clamp(14px,4.5vmin,52px)}
+#ecran{background:var(--fond)}
+#bloc{background:var(--txt)}
+#touches button{background:#5b50b8;color:#e4e1ff;border:2px solid #b9b5f5;border-radius:4px;padding:10px 14px;min-height:44px;font:bold 13px/1 "Courier New",monospace;letter-spacing:.05em}
+#touches button:active{background:#b9b5f5;color:#4a45b0}
+
+</style>
+</head>
+<body class="c64">
+<main id="poste" aria-label="Casier C64">
+  <div id="boitier">
+    <div id="ecran">
+      <div id="verre">
+        <div id="entete" class="l inv"></div>
+        <div id="sortie" role="log" aria-live="polite" aria-label="Écran"></div>
+        <div id="ligne"><span id="invite"></span><span id="texte"></span><span id="bloc"></span>
+          <input id="clavier" type="text" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" enterkeyhint="send" aria-label="Saisie : un numéro ou une commande">
+        </div>
+        <div id="pied" class="l inv"></div>
+      </div>
+      <div id="fx"></div>
+    </div>
+  </div>
+  <div id="touches" role="group" aria-label="Touches"></div>
+</main>
+<noscript><p style="position:fixed;inset:0;margin:0;padding:24px;background:#000;color:#ddd">Ce thème a besoin de JavaScript. Le casier classique reste disponible : <a href="../" style="color:#9cf">ouvrir le casier</a>.</p></noscript>
+<script src="../data-casier.js"></script>
+<script src="../intros.js"></script>
+<script>
+(function () {
+  "use strict";
+  /* ===== SECTION : Réglages du thème (remplis par le générateur) ===== */
+  var CONF = {"cle": "c64", "nom": "C64", "mode": "flux", "rows": 25, "interligne": 1.28, "vitesse": 20, "maj": true, "sansAccent": true, "sepNum": " ", "invite": "", "titreEntete": "", "ouverture": "OUVERTURE DANS UN NOUVEL ONGLET...", "questionRecherche": "MOT A CHERCHER ?", "erreur": "?SYNTAX  ERROR\nREADY.", "aucun": "AUCUN RESULTAT.", "introuvable": "?FILE NOT FOUND  ERROR\nREADY.", "efface": false, "marge": 0, "banniere": ["", "    **** CASIER BASIC V1 ****", "", " 64K RAM SYSTEM  38911 BASIC BYTES FREE", ""], "aide": ["TAPE UN NUMERO PUIS RETURN.", "", "LOAD \"JEUX\"  OUVRE UN DOSSIER", "LIST         REAFFICHE L'ECRAN", "RUN          OUVRE LA RESSOURCE", "HOME         RETOUR AU SOMMAIRE", "BACK         ECRAN PRECEDENT", "UN MOT LIBRE LANCE UNE RECHERCHE."], "touches": [["LIST", "aide"], ["HOME", "sommaire"], ["BACK", "retour"], ["RETURN", "envoi"]], "apresVue": function (v) { return v.t === "menu" ? ["", 'TAPE UN NUMERO, OU: LOAD "JEUX"', "", "READY."] : ["", "READY."]; }, "avantLoad": function (nom) { return ["", "SEARCHING FOR " + String(nom).replace(/"/g, "").toUpperCase(), "LOADING"]; }};
+  var DONNEES = window.CASIER || { base: "", items: [] };
+  var RESSOURCES = DONNEES.items || [];
+  var FAMILLES = { J: "Jeux", O: "Outils", C: "Cours et manuels", E: "Évaluations" };
+  var ORDRE = ["J", "O", "C", "E"];
+  var COLS = 40, ROWS = CONF.rows;
+  var PAGE = CONF.mode === "page";
+
+  var $ = function (id) { return document.getElementById(id); };
+  var sortie = $("sortie"), entete = $("entete"), pied = $("pied"), verre = $("verre"), texte = $("texte"), clavier = $("clavier"), invite = $("invite");
+  var reduit = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+
+  /* ===== SECTION : Outils de texte ===== */
+  /* Enlève accents et casse (recherche et commandes). */
+  function simple(s) { return String(s == null ? "" : s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/\s+/g, " ").trim(); }
+  /* Rend un texte affichable par cette console (apostrophes, accents, capitales, symboles retirés). */
+  function net(s) {
+    s = String(s == null ? "" : s).replace(/[‘’]/g, "'").replace(/[“”«»]/g, '"').replace(/[–—]/g, "-").replace(/…/g, "...").replace(/[  ]/g, " ");
+    if (CONF.sansAccent) { s = s.normalize("NFD").replace(/[̀-ͯ]/g, ""); s = s.replace(/[^\x20-\x7E\n]/g, ""); }
+    else s = s.replace(/[^\x20-\x7EÀ-ſ\n]/g, "");
+    return CONF.maj ? s.toUpperCase() : s;
+  }
+  /* Découpe un texte en lignes de largeur maximale larg ; retrait = début des lignes suivantes. */
+  function envelopper(txt, larg, retrait) {
+    var mots = net(txt).split(/\s+/).filter(Boolean), out = [], cur = "", pre = retrait || "";
+    mots.forEach(function (m) {
+      while (m.length > larg) { if (cur) { out.push(cur); cur = pre; } out.push(m.slice(0, larg)); m = m.slice(larg); }
+      if (!cur.trim()) cur = cur + m;
+      else if ((cur + " " + m).length <= larg) cur += " " + m;
+      else { out.push(cur); cur = pre + m; }
+    });
+    if (cur.trim()) out.push(cur);
+    return out;
+  }
+  function adresse(it) { return /^https?:/.test(it.u) ? it.u : (DONNEES.base || "") + it.u; }
+  function dateFr(d) { var p = String(d || "").split("-"); return p.length === 3 ? p[2] + "/" + p[1] + "/" + p[0] : ""; }
+  /* Ouvre une adresse dans un nouvel onglet, sans lien de retour vers cette page. */
+  function ouvrirLien(url) {
+    var a = document.createElement("a"); a.href = url; a.target = "_blank"; a.rel = "noopener noreferrer";
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+  function famille(k) { return RESSOURCES.filter(function (r) { return r.k === k; }); }
+
+  /* ===== SECTION : Mise à l’échelle (40 colonnes toujours entières à l’écran) ===== */
+  var ratio = 0.6;
+  function mesurer() {
+    var s = document.createElement("span");
+    s.style.cssText = "position:absolute;visibility:hidden;white-space:pre;font:100px " + getComputedStyle(document.body).fontFamily;
+    s.textContent = new Array(41).join("M"); document.body.appendChild(s);
+    ratio = s.getBoundingClientRect().width / 40 / 100 || 0.6; s.remove();
+  }
+  function ajuster() {
+    var e = $("ecran").getBoundingClientRect();
+    var pad = CONF.marge || 0, w = Math.max(160, e.width - pad * 2), h = Math.max(120, e.height - pad * 2);
+    var fs = Math.floor(Math.min(w / (COLS * ratio), h / (ROWS * CONF.interligne)) * 10) / 10;
+    fs = Math.max(8, Math.min(fs, 34));
+    var lh = Math.round(fs * CONF.interligne * 10) / 10, cw = fs * ratio;
+    var st = document.documentElement.style;
+    st.setProperty("--fs", fs + "px"); st.setProperty("--lh", lh + "px"); st.setProperty("--cw", cw + "px");
+    verre.style.width = Math.ceil(cw * COLS) + "px"; verre.style.height = Math.ceil(lh * ROWS) + "px"; verre.style.fontSize = fs + "px";
+  }
+
+  /* ===== SECTION : Affichage ligne par ligne (effet « machine ») ===== */
+  var file = [], enCours = false, minuteur = null;
+  function creerLigne(l) {
+    var d = document.createElement("div");
+    var o = typeof l === "string" ? { t: l } : l;
+    d.className = "l" + (o.c ? " " + o.c : "") + (o.n ? " cl" : "");
+    d.textContent = o.t;
+    if (o.n) {
+      d.tabIndex = 0; d.setAttribute("role", "button"); d.dataset.n = o.n;
+      d.addEventListener("click", function () { valider(String(o.n), true); });
+      d.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); valider(String(o.n), true); } });
+    }
+    return d;
+  }
+  /* Écrit des lignes ; cb est appelé quand tout est écrit. */
+  function ecrire(lignes, cb) {
+    file.push({ l: lignes.slice(), cb: cb }); if (!enCours) suite();
+  }
+  function suite() {
+    var job = file[0];
+    if (!job) { enCours = false; ligneVisible(true); return; }
+    enCours = true; ligneVisible(false);
+    function pas() {
+      if (!job.l.length) { file.shift(); var f = job.cb; if (f) f(); suite(); return; }
+      sortie.appendChild(creerLigne(job.l.shift()));
+      sortie.scrollTop = sortie.scrollHeight;
+      minuteur = setTimeout(pas, reduit ? 0 : CONF.vitesse);
+    }
+    pas();
+  }
+  /* Termine tout de suite l’écriture en cours (n’importe quelle touche). */
+  function sauter() {
+    if (!enCours) return;
+    clearTimeout(minuteur);
+    while (file.length) { var j = file.shift(); j.l.forEach(function (l) { sortie.appendChild(creerLigne(l)); }); if (j.cb) j.cb(); }
+    sortie.scrollTop = sortie.scrollHeight; enCours = false; ligneVisible(true);
+  }
+  function ligneVisible(oui) { $("ligne").style.visibility = oui ? "visible" : "hidden"; if (oui) { try { clavier.focus({ preventScroll: true }); } catch (e) { /* ignoré */ } } }
+  function effacerEcran() { sortie.textContent = ""; }
+
+  /* ===== SECTION : Contenus ===== */
+  var pile = [], vue = null, attenteRecherche = false;
+  function ligneMenu(n, txt) { return { t: " " + (n < 10 ? " " : "") + n + CONF.sepNum + net(txt), n: n }; }
+  function contenuMenu() {
+    var o = [];
+    ORDRE.forEach(function (k, i) { o.push(ligneMenu(i + 1, FAMILLES[k] + " (" + famille(k).length + ")")); });
+    o.push(ligneMenu(5, "Rechercher")); o.push(ligneMenu(6, "À propos")); o.push(ligneMenu(7, "Autres thèmes")); o.push(ligneMenu(8, "Quitter (casier classique)"));
+    return { titre: "SOMMAIRE", lignes: o };
+  }
+  function contenuListe(v) {
+    var o = [];
+    v.items.forEach(function (it, i) { o.push(ligneMenu(i + 1, it.t).t.length > COLS ? { t: ligneMenu(i + 1, it.t).t.slice(0, COLS - 1) + (CONF.maj ? "." : "…"), n: i + 1 } : ligneMenu(i + 1, it.t)); });
+    if (!o.length) o.push({ t: " " + net(CONF.aucun) });
+    return { titre: net(v.titre), lignes: o };
+  }
+  function contenuFiche(it) {
+    var o = [];
+    envelopper(it.t, COLS - 1).forEach(function (l) { o.push({ t: " " + l, c: "tit" }); });
+    o.push("");
+    o.push(" " + net("Type : " + (FAMILLES[it.k] || "Autre") + (it.v ? "   Version : " + it.v : "")));
+    if (it.d) o.push(" " + net("Modifié le " + dateFr(it.d)));
+    if (it.g && it.g.length) envelopper("Mots-clés : " + it.g.join(", "), COLS - 1, "  ").forEach(function (l) { o.push(" " + l); });
+    o.push("");
+    String(it.l || it.x || "").split("\n").forEach(function (l) {
+      l = l.trim(); if (!l) return;
+      if (l.indexOf("- ") === 0) { envelopper("* " + l.slice(2), COLS - 2, "  ").forEach(function (m) { o.push(" " + m); }); return; }
+      var tete = l.indexOf("## ") === 0 ? l.slice(3) : l;
+      var titre = (l.indexOf("## ") === 0 || /^[←-⯿\uD83C-\uDBFF]/.test(l)) && tete.length < 60;
+      if (titre) { o.push(""); envelopper(tete, COLS - 1).forEach(function (m) { o.push({ t: " " + net(m).toUpperCase(), c: "tit" }); }); }
+      else envelopper(tete, COLS - 1).forEach(function (m) { o.push(" " + m); });
+    });
+    o.push("");
+    o.push(ligneMenu(1, "Ouvrir la ressource")); o.push(ligneMenu(2, "Retour à la liste")); o.push(ligneMenu(3, "Sommaire"));
+    return { titre: net(it.t).slice(0, 26), lignes: o };
+  }
+  function contenuTexte(v) { return { titre: v.titre, lignes: v.lignes.slice() }; }
+  function contenuPour(v) {
+    if (v.t === "menu") return contenuMenu();
+    if (v.t === "liste") return contenuListe(v);
+    if (v.t === "fiche") return contenuFiche(v.it);
+    return contenuTexte(v);
+  }
+  var TEXTE_APROPOS = [
+    "CASIER - THEME " + CONF.nom.toUpperCase(), "",
+    "Créé par Tom Rougeaud.", "Réalisé avec l’aide de l’IA :", "Claude Sonnet 5.5 (Anthropic).", "",
+    "Licence CC BY-NC 4.0.", "",
+    "Décor d’époque entièrement original :", "aucun logo, aucune image, aucun son", "d’une marque réelle.", "",
+    "Confidentialité : aucune donnée n’est", "collectée ni envoyée. Seul réglage", "gardé sur cet appareil : « ne plus", "afficher l’intro » (facultatif)."
+  ];
+
+  /* ===== SECTION : Navigation ===== */
+  function montrer(v, sansPile) {
+    if (!sansPile && vue) pile.push(vue);
+    vue = v; v.p = v.p || 0;
+    var c = contenuPour(v);
+    if (PAGE) {
+      var lpp = ROWS - 4, np = Math.max(1, Math.ceil(c.lignes.length / lpp));
+      v.p = Math.max(0, Math.min(v.p, np - 1));
+      sauter(); effacerEcran();
+      entete.textContent = net(" " + CONF.titreEntete + new Array(Math.max(1, COLS - CONF.titreEntete.length - c.titre.length - 2)).join(" ") + c.titre + " ").slice(0, COLS);
+      var morceau = c.lignes.slice(v.p * lpp, v.p * lpp + lpp);
+      pied.textContent = net(" " + CONF.pied(v.p + 1, np)).slice(0, COLS);
+      ecrire([""].concat(morceau));
+    } else {
+      var sortieL = c.lignes.slice();
+      if (v.t !== "menu" || !v.neuf) sortieL.unshift("");
+      if (CONF.apresVue) sortieL = sortieL.concat(CONF.apresVue(v));
+      ecrire(sortieL);
+    }
+  }
+  function retour() {
+    if (!pile.length) { montrer({ t: "menu" }, true); return; }
+    montrer(pile.pop(), true);
+  }
+  function sommaire() { pile = []; vue = null; montrer({ t: "menu" }); }
+  function pageSuivante(d) {
+    if (!vue || !PAGE) { if (!PAGE) ecrire([net("(TOUT EST AFFICHE : UTILISE LA MOLETTE)")]); return; }
+    var p = vue.p + d, c = contenuPour(vue), np = Math.max(1, Math.ceil(c.lignes.length / (ROWS - 4)));
+    if (p < 0 || p >= np) return;
+    vue.p = p; montrer(vue, true);
+  }
+  function ouvrirFiche(it) { montrer({ t: "fiche", it: it }); }
+  function ouvrirFamille(k) { montrer({ t: "liste", k: k, titre: FAMILLES[k], items: famille(k) }); }
+  function lancerRecherche(q) {
+    var t = simple(q), mots = t.split(" ").filter(Boolean);
+    var res = RESSOURCES.filter(function (r) {
+      var h = simple([r.t, r.x, (r.g || []).join(" ")].join(" "));
+      return mots.every(function (m) { return h.indexOf(m) >= 0; });
+    });
+    montrer({ t: "liste", k: "rech", titre: "Recherche : " + q, items: res });
+  }
+  function ouvrirRessource(it) {
+    ecrire(net(CONF.ouverture).split("\n"));
+    ouvrirLien(adresse(it));
+  }
+  function selectionner(n) {
+    if (!vue) { sommaire(); return; }
+    if (vue.t === "menu") {
+      if (n >= 1 && n <= 4) ouvrirFamille(ORDRE[n - 1]);
+      else if (n === 5) { attenteRecherche = true; dire(CONF.questionRecherche); }
+      else if (n === 6) montrer({ t: "texte", titre: "À PROPOS", lignes: TEXTE_APROPOS.map(function (l) { return " " + net(l); }) });
+      else if (n === 7) window.location.href = "../themes/";
+      else if (n === 8) window.location.href = "../";
+      else erreur();
+    } else if (vue.t === "liste") {
+      var it = vue.items[n - 1]; if (it) ouvrirFiche(it); else erreur();
+    } else if (vue.t === "fiche") {
+      if (n === 1) ouvrirRessource(vue.it); else if (n === 2) retour(); else if (n === 3) sommaire(); else erreur();
+    } else erreur();
+  }
+  function dire(m) { ecrire([""].concat(net(m).split("\n"))); }
+  function erreur() { dire(CONF.erreur); }
+
+  /* Trouve une famille ou une fiche à partir d’un nom (commande LOAD, RUN…). */
+  function chercher(nom) {
+    var s = simple(nom).replace(/^"|"$/g, "").replace(/\.\w+$/, "");
+    if (!s) return null;
+    for (var i = 0; i < ORDRE.length; i++) if (simple(FAMILLES[ORDRE[i]]).indexOf(s) === 0) return { fam: ORDRE[i] };
+    var ex = RESSOURCES.filter(function (r) { return simple(r.t).indexOf(s) === 0; });
+    if (!ex.length) ex = RESSOURCES.filter(function (r) { return simple(r.t).indexOf(s) >= 0; });
+    return ex.length ? { it: ex[0] } : null;
+  }
+
+  /* ===== SECTION : Saisie et commandes ===== */
+  function valider(brut, clic) {
+    brut = String(brut || "").trim();
+    if (enCours) sauter();
+    if (!clic) { clavier.value = ""; texte.textContent = ""; }
+    if (!PAGE) ecrire([invite.textContent + net(brut)]);
+    var m = simple(brut), mm;
+    if (attenteRecherche) { attenteRecherche = false; if (brut) { lancerRecherche(brut); return; } }
+    if (!m) { if (PAGE) pageSuivante(1); return; }
+    if (CONF.efface && /^(home|cls|new)$/.test(m)) { sauter(); effacerEcran(); }
+    if (/^\d+$/.test(m)) { selectionner(parseInt(m, 10)); return; }
+    if (/^(s|sommaire|menu|home|new|catalog|cat|dir|ls|accueil)$/.test(m)) { sommaire(); return; }
+    if (/^(r|retour|back|esc|precedent)$/.test(m)) { retour(); return; }
+    if (/^(\+|suite|n|next)$/.test(m)) { pageSuivante(1); return; }
+    if (/^(-|p|prec)$/.test(m)) { pageSuivante(-1); return; }
+    if (/^(\?|h|help|aide|guide)$/.test(m)) { montrer({ t: "texte", titre: "AIDE", lignes: CONF.aide.map(function (l) { return " " + net(l); }) }); return; }
+    if (/^(liste|list|ll)$/.test(m)) { if (vue) montrer(vue, true); else sommaire(); return; }
+    if (/^(quitter|exit|bye|quit)$/.test(m)) { window.location.href = "../"; return; }
+    if (/^(themes?|autres themes)$/.test(m)) { window.location.href = "../themes/"; return; }
+    if (/^(o|ouvrir|run|open|go)$/.test(m)) { if (vue && vue.t === "fiche") ouvrirRessource(vue.it); else erreur(); return; }
+    mm = /^(?:run|open|ouvrir|go)\s+(\d+)$/.exec(m);
+    if (mm) { if (vue && vue.t === "liste" && vue.items[+mm[1] - 1]) ouvrirRessource(vue.items[+mm[1] - 1]); else erreur(); return; }
+    mm = /^(?:load|charger|run|open|cat|catalog)\s*(.+)$/.exec(m);
+    if (mm) {
+      var t = chercher(mm[1]);
+      if (!t) { dire(CONF.introuvable); return; }
+      if (CONF.avantLoad) ecrire(CONF.avantLoad(mm[1]));
+      if (t.fam) ouvrirFamille(t.fam); else ouvrirFiche(t.it);
+      return;
+    }
+    mm = /^(?:chercher|cherche|find|search|recherche)\s*(.*)$/.exec(m);
+    if (mm) { if (mm[1]) lancerRecherche(mm[1]); else { attenteRecherche = true; dire(CONF.questionRecherche); } return; }
+    /* Sinon : on prend le mot pour une recherche. */
+    var essai = chercher(brut);
+    if (essai && essai.fam) { ouvrirFamille(essai.fam); return; }
+    lancerRecherche(brut);
+  }
+
+  /* Saisie : le champ caché reçoit le clavier (y compris mobile) et sa valeur est recopiée à l’écran. */
+  clavier.addEventListener("input", function () { texte.textContent = net(clavier.value).slice(0, COLS - invite.textContent.length - 1); });
+  clavier.addEventListener("keydown", function (e) {
+    if (enCours && e.key !== "Tab") { sauter(); if (e.key === "Enter") e.preventDefault(); }
+    if (e.key === "Enter") { e.preventDefault(); valider(clavier.value); }
+    else if (e.key === "PageDown") { e.preventDefault(); pageSuivante(1); }
+    else if (e.key === "PageUp") { e.preventDefault(); pageSuivante(-1); }
+    else if (e.key === "Escape") { e.preventDefault(); retour(); }
+  });
+  $("ecran").addEventListener("click", function (e) { if (!e.target.closest(".cl")) { try { clavier.focus({ preventScroll: true }); } catch (x) { /* ignoré */ } } });
+
+  /* Touches à l’écran (pour le tactile) : Envoi, Retour, Sommaire, Suite, Correction, Aide. */
+  CONF.touches.forEach(function (t) {
+    var b = document.createElement("button"); b.type = "button"; b.textContent = t[0]; b.setAttribute("data-act", t[1]);
+    b.addEventListener("click", function () {
+      if (t[1] === "envoi") valider(clavier.value);
+      else if (t[1] === "retour") retour();
+      else if (t[1] === "sommaire") sommaire();
+      else if (t[1] === "suite") pageSuivante(1);
+      else if (t[1] === "prec") pageSuivante(-1);
+      else if (t[1] === "efface") { clavier.value = ""; texte.textContent = ""; }
+      else if (t[1] === "aide") valider("aide");
+      try { clavier.focus({ preventScroll: true }); } catch (x) { /* ignoré */ }
+    });
+    $("touches").appendChild(b);
+  });
+
+  /* Plein écran au premier geste (si l’intro est désactivée, elle ne le fait pas). */
+  function premierGeste() {
+    document.removeEventListener("pointerdown", premierGeste, true); document.removeEventListener("keydown", premierGeste, true);
+    try { if (!document.fullscreenElement && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(function () {}); } catch (e) { /* ignoré */ }
+  }
+  document.addEventListener("pointerdown", premierGeste, true); document.addEventListener("keydown", premierGeste, true);
+
+  /* ===== SECTION : Démarrage ===== */
+  function demarrer() {
+    invite.textContent = CONF.invite;
+    if (PAGE) { entete.style.display = "block"; pied.style.display = "block"; }
+    mesurer(); ajuster();
+    var ban = CONF.banniere.map(net);
+    if (PAGE) { montrer({ t: "menu" }, true); }
+    else { ecrire(ban); var m = contenuMenu(); vue = { t: "menu", neuf: true, p: 0 }; ecrire(m.lignes.concat(CONF.apresVue ? CONF.apresVue(vue) : [])); }
+    ligneVisible(true);
+  }
+  window.addEventListener("resize", function () { ajuster(); });
+  /* Écran allumé : intro animée (intros.js) puis console. */
+  mesurer(); ajuster();
+  if (window.INTROS) INTROS.lancer(CONF.cle, demarrer); else demarrer();
+})();
+</script>
+</body>
+</html>

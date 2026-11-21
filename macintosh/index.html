@@ -339,6 +339,7 @@ html,body{background:
 
 <script src="../data-casier.js"></script>
 <script src="../logiciels.js"></script>
+<script src="../intros.js"></script>
 <script>
 (function () {
 "use strict";
@@ -941,6 +942,8 @@ document.getElementById("logo-amorce").innerHTML = svg("pomme", 84);
 if (!RESSOURCES.length) boite("La liste des ressources n’a pas pu être lue. Vérifie que le fichier data-casier.js est bien à côté du dossier macintosh.", "alerte");
 majHorloge(); setInterval(majHorloge, 15000);
 amorcer();
+/* Intro animée du thème (intros.js) : porte « appuie pour allumer », puis jingle et logo. */
+if (window.INTROS) INTROS.lancer("macintosh");
 })();
 </script>
 </body>

@@ -475,7 +475,7 @@ function renderPublic(){
   const m=$('#main');
   m.innerHTML=
    '<section class="hero"><h2>Casier de <span>'+OWNER+'</span></h2><p>Ressources pédagogiques numériques — jeux, exerciseurs, outils et cours</p></section>'+
-   '<div class="bar"><div class="search"><i aria-hidden="true">🔎</i><label class="sr" for="q">Rechercher une ressource</label><input id="q" type="search" name="casier-recherche" data-lpignore="true" data-1p-ignore="true" placeholder="Rechercher une ressource…" value="'+esc(F.q)+'" autocomplete="off"></div>'+
+   '<div class="bar"><div class="search"><i aria-hidden="true">🔎</i><label class="sr" for="q">Rechercher une ressource</label><input id="q" type="text" role="searchbox" name="casier-recherche" data-lpignore="true" data-1p-ignore="true" placeholder="Rechercher une ressource…" value="'+esc(F.q)+'" autocomplete="off"></div>'+
    '<label class="sr" for="sortsel">Trier</label><select class="sel" id="sortsel">'+[['perso','↕ Mon ordre'],['az','A → Z'],['za','Z → A'],['new','Plus récent'],['old','Plus ancien'],['date','Date de publication']].map(o=>'<option value="'+o[0]+'"'+(F.sort===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+'</select>'+
    '<button class="f-pill" id="favbtn" aria-pressed="'+F.fav+'">♥ Favoris ('+pub.filter(r=>FAV.has(r.id)).length+')</button></div>'+
    '<div id="pills">'+pills(TT,F.th,'th',pub)+pills(TG,F.tg,'tg',pub)+'</div>'+
@@ -535,7 +535,7 @@ function renderAdmin(){
    '<button class="btn ghost" data-act="import">⬆️ Importer ressources.json</button>'+
    '<button class="btn ghost" data-act="export">⬇️ Sauvegarde JSON</button>'+
    '<button class="btn ghost" data-act="sql">🛠️ Configuration base</button></div>'+
-   '<div class="bar" style="justify-content:flex-start"><div class="search"><i aria-hidden="true">🔎</i><label class="sr" for="aq">Filtrer</label><input id="aq" type="search" autocomplete="off" placeholder="Filtrer la liste…" value="'+esc(A.q)+'"></div>'+
+   '<div class="bar" style="justify-content:flex-start"><div class="search"><i aria-hidden="true">🔎</i><label class="sr" for="aq">Filtrer</label><input id="aq" type="text" role="searchbox" autocomplete="off" placeholder="Filtrer la liste…" value="'+esc(A.q)+'"></div>'+
    '<label class="sr" for="ast">Statut</label><select class="sel" id="ast">'+[['all','Toutes'],['pub','Publiées'],['draft','Brouillons']].map(o=>'<option value="'+o[0]+'"'+(A.status===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+'</select></div>'+
    (filtered?'<p class="hint">Un filtre est actif : le glisser-déposer est désactivé (retirez le filtre pour réordonner).</p>':'<p class="hint">Glissez la poignée ⠿ (souris ou doigt) ou utilisez ▲ ▼ pour réordonner. L’ordre est enregistré automatiquement.</p>')+
    '<div id="bulk"></div><div class="alist" id="alist">'+

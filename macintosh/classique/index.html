@@ -127,7 +127,6 @@ button{font:inherit;color:inherit;cursor:default}
   <div id="logo-amorce"></div>
   <div class="bj">hello</div>
   <div>Bienvenue dans le Casier</div>
-  <small>(clique ou appuie sur Entrée pour continuer)</small>
 </div>
 <div id="arret" hidden tabindex="0" role="status">
   <div>Vous pouvez maintenant éteindre votre Macintosh en toute sécurité.</div>
@@ -136,7 +135,7 @@ button{font:inherit;color:inherit;cursor:default}
 
 <script src="../../data-casier.js"></script>
 <script src="../../logiciels.js"></script>
-<script src="../../intros.js"></script>
+<script src="../../intros.js?v=2"></script>
 <script>
 (function () {
 "use strict";
@@ -554,7 +553,7 @@ function ouvrirRecherche() {
   ouvrirFenetre({
     id: "recherche", titre: "Rechercher", l: 500, h: 360,
     contenu: function (corps) {
-      var champ = el("input"); champ.type = "search"; champ.setAttribute("autocomplete", "off"); champ.setAttribute("autocapitalize", "off"); champ.setAttribute("autocorrect", "off"); champ.spellcheck = false; champ.name = "casier-recherche-" + Math.random().toString(36).slice(2, 8); champ.setAttribute("data-lpignore", "true"); champ.setAttribute("data-1p-ignore", "true"); champ.setAttribute("data-bwignore", "true"); champ.setAttribute("data-form-type", "other"); champ.readOnly = true; champ.addEventListener("focus", function () { champ.readOnly = false; }); champ.addEventListener("pointerdown", function () { champ.readOnly = false; }); champ.setAttribute("aria-label", "Mot à chercher");
+      var champ = el("input"); champ.type = "text"; champ.setAttribute("role", "searchbox"); champ.setAttribute("inputmode", "search"); champ.setAttribute("aria-autocomplete", "none"); champ.setAttribute("autocomplete", "off"); champ.setAttribute("autocapitalize", "off"); champ.setAttribute("autocorrect", "off"); champ.spellcheck = false; champ.name = "casier-recherche-" + Math.random().toString(36).slice(2, 8); champ.setAttribute("data-lpignore", "true"); champ.setAttribute("data-1p-ignore", "true"); champ.setAttribute("data-bwignore", "true"); champ.setAttribute("data-form-type", "other"); champ.readOnly = true; champ.addEventListener("focus", function () { champ.readOnly = false; }); champ.addEventListener("pointerdown", function () { champ.readOnly = false; }); champ.setAttribute("aria-label", "Mot à chercher");
       champ.placeholder = "Un titre, un mot-clé, un niveau…";
       var zone = el("div", "zone"), nb = el("span", "", "");
       /* Filtre sur le titre, la description et les mots-clés. */
@@ -698,8 +697,6 @@ function amorcer() {
 }
 /* Termine l’écran de démarrage. */
 function finAmorce() { clearTimeout(minuteur); amorceEl.hidden = true; }
-amorceEl.addEventListener("click", finAmorce);
-amorceEl.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") finAmorce(); });
 arretEl.addEventListener("click", amorcer);
 arretEl.addEventListener("keydown", function (e) { if (e.key === "Enter") amorcer(); });
 /* Boîte « Éteindre » (simulation : la page reste ouverte). */

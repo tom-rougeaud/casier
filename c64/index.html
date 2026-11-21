@@ -28,7 +28,7 @@ body{overflow:hidden;font-family:"Courier New","DejaVu Sans Mono","Liberation Mo
 #sortie{flex:1 1 auto;overflow-y:auto;overflow-x:hidden;scrollbar-width:none}
 #sortie::-webkit-scrollbar{display:none}
 #ligne{position:relative;display:flex;height:var(--lh);line-height:var(--lh);white-space:pre;flex:none}
-#clavier{position:absolute;inset:0;width:100%;height:100%;opacity:0;font-size:16px;border:0;background:transparent;color:transparent;caret-color:transparent}
+#clavier{resize:none;overflow:hidden;position:absolute;inset:0;width:100%;height:100%;opacity:0;font-size:16px;border:0;background:transparent;color:transparent;caret-color:transparent}
 #bloc{display:inline-block;width:var(--cw);height:calc(var(--lh) * .9);margin-top:calc(var(--lh) * .05);animation:cligne 1s steps(1) infinite}
 #entete,#pied{display:none;flex:none}
 @keyframes cligne{50%{opacity:0}}
@@ -67,7 +67,7 @@ body{background:#7c70da}
         <div id="entete" class="l inv"></div>
         <div id="sortie" role="log" aria-live="polite" aria-label="Écran"></div>
         <div id="ligne"><span id="invite"></span><span id="texte"></span><span id="bloc"></span>
-          <input id="clavier" type="text" name="casier-commande" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" data-form-type="other" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" enterkeyhint="send" aria-label="Saisie : un numéro ou une commande">
+          <textarea id="clavier" rows="1" name="casier-commande" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" data-form-type="other" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" enterkeyhint="send" aria-label="Saisie : un numéro ou une commande"></textarea>
         </div>
         <div id="pied" class="l inv"></div>
       </div>
@@ -78,7 +78,7 @@ body{background:#7c70da}
 </main>
 <noscript><p style="position:fixed;inset:0;margin:0;padding:24px;background:#000;color:#ddd">Ce thème a besoin de JavaScript. Le casier classique reste disponible : <a href="../" style="color:#9cf">ouvrir le casier</a>.</p></noscript>
 <script src="../data-casier.js"></script>
-<script src="../intros.js"></script>
+<script src="../intros.js?v=2"></script>
 <script>
 (function () {
   "use strict";

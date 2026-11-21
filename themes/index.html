@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src 'self';">
+<title>Thèmes rétro — Casier Pédagogique Numérique</title>
+<!--
+  Projet : Casier — page « Thèmes rétro »  ·  Version : 1.0.0  ·  Date : 21/11/2026
+  Auteur : Tom Rougeaud  ·  Licence : CC BY-NC 4.0
+  Réalisé avec l’aide de l’IA : Claude Sonnet 5.5 (Anthropic)
+  Page statique : elle présente les versions rétro du casier. Aucune donnée n’est collectée, aucun script, aucune ressource distante.
+-->
+<style>
+/* ===== Variables et base (palette sobre : ardoise et marine) ===== */
+:root{--fond:#eef1f6;--encre:#1d2740;--doux:#55627d;--carte:#fff;--trait:#cfd6e4;--accent:#27407a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fond);color:var(--encre);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:28px 16px 48px}
+a{color:var(--accent)}
+.retour{display:inline-block;margin-bottom:18px}
+h1{margin:0 0 6px;font-size:1.8rem}
+.intro{margin:0 0 24px;color:var(--doux)}
+.grille{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+.carte{background:var(--carte);border:1px solid var(--trait);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 2px 8px rgba(29,39,64,.08)}
+.carte img{display:block;width:100%;height:auto;aspect-ratio:8/5;object-fit:cover;background:#dfe5f0}
+.corps{padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
+.corps h2{margin:0;font-size:1.15rem}
+.corps p{margin:0;color:var(--doux);font-size:.95rem}
+.btn{margin-top:auto;align-self:flex-start;display:inline-block;padding:8px 18px;border-radius:999px;background:var(--accent);color:#fff;text-decoration:none;font-weight:600}
+.btn:focus-visible,a:focus-visible{outline:3px solid #7fa4ee;outline-offset:2px}
+.note{margin-top:26px;color:var(--doux);font-size:.9rem}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <a class="retour" href="../">← Retour au casier</a>
+  <h1>Thèmes rétro du casier</h1>
+  <p class="intro">Le même casier, habillé comme des ordinateurs d’autrefois. Les ressources sont les mêmes : seul l’affichage change.</p>
+  <div class="grille">
+    <article class="carte"><img src="98.webp" alt="Aperçu du thème Windows 98 : bureau turquoise avec fenêtres grises" width="640" height="400">
+      <div class="corps"><h2>Windows 98</h2><p>Bureau turquoise, fenêtres grises en relief, menu Démarrer, Démineur et Lecteur audio.</p><a class="btn" href="../98/">Ouvrir</a></div></article>
+    <article class="carte"><img src="xp.webp" alt="Aperçu du thème Windows XP : colline verte, ciel bleu et bouton démarrer vert" width="640" height="400">
+      <div class="corps"><h2>Windows XP</h2><p>Colline verte et ciel bleu, fenêtres bleues arrondies, bouton « démarrer » vert, fond d’écran personnalisable.</p><a class="btn" href="../xp/">Ouvrir</a></div></article>
+    <article class="carte"><img src="macintosh.webp" alt="Aperçu du thème Macintosh : fenêtres arrondies, dock et arc-en-ciel" width="640" height="400">
+      <div class="corps"><h2>Macintosh années 2000</h2><p>Fenêtres arrondies, dock, poire multicolore et grand « hello » cursif. Le Duel est gagné d’avance.</p><a class="btn" href="../macintosh/">Ouvrir</a></div></article>
+    <article class="carte"><img src="classique.webp" alt="Aperçu du thème Macintosh classique : fenêtres rayées noir et blanc" width="640" height="400">
+      <div class="corps"><h2>Macintosh classique</h2><p>Noir et blanc, fenêtres rayées, barre de menus blanche : l’esprit des premiers Macintosh.</p><a class="btn" href="../macintosh/classique/">Ouvrir</a></div></article>
+  </div>
+  <p class="note">Ces versions lisent une photo des fiches du casier : elle est mise à jour à la demande. Aucune donnée n’est collectée.</p>
+</main>
+</body>
+</html>

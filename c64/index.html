@@ -78,7 +78,7 @@ body{background:#7c70da}
 </main>
 <noscript><p style="position:fixed;inset:0;margin:0;padding:24px;background:#000;color:#ddd">Ce thème a besoin de JavaScript. Le casier classique reste disponible : <a href="../" style="color:#9cf">ouvrir le casier</a>.</p></noscript>
 <script src="../data-casier.js"></script>
-<script src="../intros.js?v=3"></script>
+<script src="../intros.js?v=4"></script>
 <script>
 (function () {
   "use strict";
@@ -170,32 +170,54 @@ body{background:#7c70da}
     function pas() {
       if (!job.l.length) { file.shift(); var f = job.cb; if (f) f(); suite(); return; }
       sortie.appendChild(creerLigne(job.l.shift()));
-      sortie.scrollTop = sortie.scrollHeight; marquer();
+      suivre(); marquer();
       minuteur = setTimeout(pas, reduit ? 0 : CONF.vitesse);
     }
     pas();
+  }
+  /* Défilement pendant l’écriture : suit la fin tant que l’écran n’est pas plein, puis reste au début de l’écran courant
+     pour que la description puisse être lue (on la fait défiler ensuite avec les flèches). */
+  function suivre() {
+    var premiere = sortie.querySelector('.l[data-s="' + serie + '"]');
+    var haut = premiere ? premiere.getBoundingClientRect().top - sortie.getBoundingClientRect().top + sortie.scrollTop : 0;
+    var max = sortie.scrollHeight - sortie.clientHeight;
+    sortie.scrollTop = Math.max(0, Math.min(max, haut));
   }
   /* Termine tout de suite l’écriture en cours (n’importe quelle touche). */
   function sauter() {
     if (!enCours) return;
     clearTimeout(minuteur);
     while (file.length) { var j = file.shift(); j.l.forEach(function (l) { sortie.appendChild(creerLigne(l)); }); if (j.cb) j.cb(); }
-    sortie.scrollTop = sortie.scrollHeight; enCours = false; ligneVisible(true); marquer();
+    suivre(); enCours = false; ligneVisible(true); marquer();
   }
   /* Navigation aux flèches : lignes cliquables de l’écran courant, la ligne choisie est en vidéo inverse. */
   function lignesCl() { return Array.prototype.filter.call(sortie.querySelectorAll(".l.cl"), function (d) { return d.dataset.s === String(serie); }); }
-  function marquer() {
+  function marquer(defiler) {
     var l = lignesCl(); if (l.length && sel >= l.length) sel = l.length - 1;
     Array.prototype.forEach.call(sortie.querySelectorAll(".l.choisi"), function (d) { d.classList.remove("choisi"); });
-    if (fleches && sel >= 0 && l[sel]) { l[sel].classList.add("choisi"); try { l[sel].scrollIntoView({ block: "nearest" }); } catch (e) { /* ignoré */ } }
+    if (fleches && sel >= 0 && l[sel]) { l[sel].classList.add("choisi"); if (defiler) try { l[sel].scrollIntoView({ block: "nearest" }); } catch (e) { /* ignoré */ } }
     if (boutonFleches) boutonFleches.setAttribute("aria-pressed", fleches ? "true" : "false");
   }
   function basculer(v) { fleches = v === undefined ? !fleches : v; sel = fleches ? Math.max(sel, 0) : -1; marquer(); }
   function deplacer(d) {
     if (enCours) sauter();
+    /* Description plus longue que l’écran : les flèches la font d’abord défiler, puis on choisit parmi les options. */
+    var trop = sortie.scrollHeight > sortie.clientHeight + 2;
+    if (trop) {
+      var pasL = Math.max(24, Math.round(parseFloat(getComputedStyle(sortie).lineHeight) || 20) * 3);
+      var bas = sortie.scrollTop + sortie.clientHeight >= sortie.scrollHeight - 2;
+      if (d > 0 && !bas) { sortie.scrollTo({ top: sortie.scrollTop + pasL, behavior: "auto" }); return; }
+      if (d < 0 && sortie.scrollTop > 0 && (!fleches || sel <= 0)) { sortie.scrollTo({ top: Math.max(0, sortie.scrollTop - pasL), behavior: "auto" }); return; }
+    }
+    /* Mode Minitel (écran par pages) : sans option à l’écran, les flèches tournent les pages ; au-dessus de la première option, elles reviennent à la page précédente. */
+    if (PAGE && vue) {
+      var nn = lignesCl().length;
+      if (!nn) { pageSuivante(d); return; }
+      if (d < 0 && (!fleches || sel <= 0) && vue.p > 0) { pageSuivante(-1); return; }
+    }
     var n = lignesCl().length; if (!n) return;
     if (!fleches) { basculer(true); sel = d > 0 ? 0 : n - 1; } else sel = (sel + d + n) % n;
-    marquer();
+    marquer(true);
   }
   function activerChoix() { var l = lignesCl(); if (fleches && sel >= 0 && l[sel]) { l[sel].click(); return true; } return false; }
   function ligneVisible(oui) { $("ligne").style.visibility = oui ? "visible" : "hidden"; if (oui) { try { clavier.focus({ preventScroll: true }); } catch (e) { /* ignoré */ } } }
